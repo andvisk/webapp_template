@@ -1,0 +1,209 @@
+    #div_root {
+      display: flex;
+      flex-flow: column;
+      height: 100%;
+    }
+
+    #div_page_header {
+      background-color:#1769aa;
+      display: flex;
+    }
+
+    #div_page_wrapper {
+      flex: 1 1 auto;
+    }
+
+    #div_main_wrapper {
+      background-color: #f8f9fa;
+      display: grid;
+      grid-template-areas: "sidebar main";
+      grid-template-columns: minmax(0, 0.5fr) minmax(0, 3.5fr);
+      height: 100%;
+    }
+    
+    #div_main_login_wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+    
+    #div_login_box{
+      background-color: #6d99c5;
+      border-radius: 5px;
+    }
+    
+    #div_login_content{
+      margin: 20px;
+    }
+
+    #nav_navigation {
+      align-self: start;
+      grid-area: sidebar;
+      flex-direction: column;
+      display: flex;
+      overflow: auto;
+      position: sticky;
+      width: 100%;
+    }
+
+    #div_side_bar {
+      background-color: #cccdb4;
+      display: block;
+    }
+
+    #main_content {
+      grid-area: main;
+      flex-direction: column;
+      display: flex;
+      width: 100%;
+      padding-left: 10px;
+      padding-top: 10px;
+    }
+
+    #article_main_content {
+      overflow-wrap: break-word;
+      display: block;
+    }
+
+    #footer {
+      width: 100%;
+      flex: 0 1 40px;
+    }
+
+    #div_page_footer {
+      background-color: #dee2e6;
+      min-height: 80px;
+    }
+    
+    #ol_side_bar {
+      list-style: none;
+      display: block;
+      padding-inline-start: 20px;
+      margin-top: 5px;
+      padding-left: 0px;
+    }
+    
+    .form_div{
+      background-color: white;
+      padding-left: 15px;
+      padding-top: 15px;
+      padding-right: 15px;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      margin-right: 15px;
+    }
+    
+    .navigation_category{
+      padding-left: 15px;
+      margin-bottom: 5px;
+      padding-left: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+    
+    .navigation_link{
+      margin: 5;
+      padding-left: 10px;
+      padding-top: 3px;
+      padding-bottom: 3px;
+      color: #37546e;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      text-decoration: none;
+      display: block;  
+    }
+    
+    #div_login_name{
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      color: white;
+      margin-left: auto;
+    }
+    
+    #p_header_login_name{
+      margin: 0;
+      padding: 15px;
+      cursor: pointer;
+    }
+    
+    #p_header_login_name:hover{
+      background-color: #35447c;
+    }
+   
+    #div_action_line{
+      display: flex;
+    }
+
+    .flow_right_within_div{
+      margin-left: auto!important;
+    }
+
+    .ui-datatable-data>tr:hover{
+      background-color: #f3f3ec!important;
+    }
+    
+    .ui-datatable-data>tr.ui-datatable-odd:hover{
+      background-color: #f3f3ec!important;
+    }
+    
+    .navigation_link:hover{
+      background-color: #babf96;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    
+    .card{
+      border-radius: 5px;
+      margin-right: 15px;
+    }
+    
+    .label_wa{
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      display: inline-block;
+      justify-self: end;
+      align-self: center;
+      white-space: nowrap;
+    }
+    
+    .input_wa{
+      font-size: 17px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      display: inline-block;
+    }
+    
+    .button_wa{
+      background-color: #cccdb4!important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"!important;
+      font-size: 16px!important;
+      border-radius: 4px!important;
+      border: 0px!important;
+      cursor: pointer!important;
+      display: inline-block!important;
+      margin-right: 15px!important;
+      color:black!important;
+    }
+    
+    .div_form_grid_two_col{
+      display: inline-grid;
+      grid-template-columns: auto auto;
+      column-gap: 15px;
+      row-gap: 3px;
+    }
+
+    .div_form_grid_three_col{
+      display: inline-grid;
+      grid-template-columns: auto auto auto;
+      column-gap: 15px;
+      row-gap: 15px;
+    }
+
+    .jsf_error_msg{
+      font-size: 14;
+      color: chocolate;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+
+    .jsf_error_msg_login_page{
+      font-size: 16;
+      color: #812121;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    }

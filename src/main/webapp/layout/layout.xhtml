@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<html
+    xmlns:faces="jakarta.faces"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core"
+    xmlns:h="jakarta.faces.html"
+    xmlns:pt="jakarta.faces.passthrough"
+    xmlns:cc="jakarta.faces.composite"
+    xmlns:my="jakarta.faces.component"
+    xmlns:c="jakarta.tags.core"
+    xmlns:fn="jakarta.tags.functions"
+    xmlns:p="http://primefaces.org/ui"
+>
+    <h:head>
+        <meta charset="UTF-8" />
+        <link rel="icon" href="#{applicationEJB.contextPath}/public/img/java.png" />
+        <link rel="stylesheet" href="#{applicationEJB.contextPath}/public/css/style.css" />
+        <link href="#{applicationEJB.contextPath}/public/assets/css/fontawesome.css" rel="stylesheet" />
+        <link href="#{applicationEJB.contextPath}/public/assets/css/brands.css" rel="stylesheet" />
+        <link href="#{applicationEJB.contextPath}/public/assets/css/solid.css" rel="stylesheet" />
+        <title>
+
+            <ui:insert name="title">Title</ui:insert>
+
+        </title>
+    </h:head>
+    <h:body>
+        <div id="div_root">
+            <div id="div_page_header">
+                <div id="div_login_name">
+                    <p id="p_header_login_name">#{sessionEJB.getUserName()}</p>
+                </div>
+            </div>
+            <div id="div_page_wrapper">
+
+                <div id="div_main_wrapper">
+
+                    <nav id="nav_navigation">
+                        <div id="div_side_bar">
+
+                            <div>
+                                <p class="navigation_category">Administravimas</p>
+                                <ol id="ol_side_bar">
+                                    <li>
+                                        <a href="#{applicationEJB.contextPath}/admin/users" class="navigation_link">Vartotojai</a>
+                                    </li>
+                                    <li>
+                                        <p class="navigation_link">navigation link 2</p>
+                                    </li>
+                                </ol>
+                            </div>
+
+                        </div>
+                    </nav>
+
+                    <main id="main_content">
+                        <ui:insert name="main_content"></ui:insert>
+                    </main>
+
+                </div>
+            </div>
+            <footer id="footer">
+                <div id="div_page_footer">
+
+                    <div>footer</div>
+
+                </div>
+            </footer>
+        </div>
+    </h:body>
+</html>

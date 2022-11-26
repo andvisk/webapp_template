@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<html
+    xmlns:faces="jakarta.faces"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core"
+    xmlns:h="jakarta.faces.html"
+    xmlns:pt="jakarta.faces.passthrough"
+    xmlns:cc="jakarta.faces.composite"
+    xmlns:my="jakarta.faces.component"
+    xmlns:c="jakarta.tags.core"
+    xmlns:fn="jakarta.tags.functions"
+    xmlns:p="http://primefaces.org/ui"
+>
+
+    <ui:composition template="../layout/layout.xhtml">
+
+        <ui:define name="title">Sample imput form</ui:define>
+
+        <ui:define name="main_content">
+            <h:form id="content_form">
+
+                <div class="form_div">
+                    <div class="div_form_grid_two_col">
+                        <h:outputLabel for="username" class="label_wa">User Name</h:outputLabel>
+                        <h:inputText id="username" value="#{usersController.object.name}" class="input_wa" />
+                        <h:commandButton id="submit-button" value="Submit" action="#{usersController.filter}" class="button_wa" />
+                    </div>
+                </div>
+
+            </h:form>
+
+        </ui:define>
+
+    </ui:composition>
+
+</html>

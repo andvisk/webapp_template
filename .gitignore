@@ -1,0 +1,11 @@
+.git
+.gradle
+.idea
+build
+bin
+.vscode
+debug_*
+.DS_Store
+/.classpath
+/.project
+/.settings/

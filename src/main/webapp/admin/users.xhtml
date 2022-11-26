@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<html
+  xmlns:faces="jakarta.faces"
+  xmlns:ui="jakarta.faces.facelets"
+  xmlns:f="jakarta.faces.core"
+  xmlns:h="jakarta.faces.html"
+  xmlns:pt="jakarta.faces.passthrough"
+  xmlns:cc="jakarta.faces.composite"
+  xmlns:my="jakarta.faces.component"
+  xmlns:c="jakarta.tags.core"
+  xmlns:fn="jakarta.tags.functions"
+  xmlns:p="http://primefaces.org/ui"
+>
+
+  <ui:composition template="../layout/layout.xhtml">
+
+    <ui:define name="title">Vartotojai</ui:define>
+
+    <ui:define name="main_content">
+      <h:form id="content_form">
+
+        <div id="div_action_line">
+          <p:commandButton value="Naujas vartotojas"
+            update="@widgetVar(dlgUser)"
+            resetValues="true"
+            oncomplete="PF('dlgUser').show();"
+            class="button_wa flow_right_within_div"
+            action="#{usersController.prepareForNewObject}"></p:commandButton>
+        </div>
+
+        <div class="card">
+          <p:dataTable
+            id="userTable"
+            emptyMessage="Įrašų nerasta"
+            widgetVar="userTable"
+            var="user"
+            value="#{usersController.model}"
+            rows="50"
+            paginator="true"
+            paginatorTemplate="{RowsPerPageDropdown} {CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+            size="small"
+            rowsPerPageTemplate="50,100,150"
+            stripedRows="true">
+
+            <p:column headerText="Vardas" sortBy="#{user.name}" filterBy="#{user.name}">
+              <h:outputText value="#{user.name}" />
+            </p:column>
+
+            <p:column headerText="El.paštas" sortBy="#{user.email}" filterBy="#{user.email}">
+              <h:outputText value="#{user.email}" />
+            </p:column>
+
+            <p:column headerText="Tipas" sortBy="#{user.role}" filterBy="#{user.role}" filterValue="#{usersController.object.role}">
+              <f:facet name="filter">
+                <p:selectOneMenu onchange="PF('userTable').filter()" styleClass="ui-custom-filter" converter="userRoleConverter">
+                  <f:selectItem itemLabel="Visi" itemValue="#{null}" noSelectionOption="true" />
+                  <f:selectItems value="#{usersController.getAllRoles()}" var="object" itemValue="#{object}" itemLabel="#{object.label}" />
+                </p:selectOneMenu>
+              </f:facet>
+
+              <h:outputText value="#{user.role.label}" />
+            </p:column>
+
+            <p:column style="width:50px;">
+              <p:commandLink
+                update="@widgetVar(dlgUser) dlgForm"
+                resetValues="true"
+                action="#{usersController.prepareForEditingObject(user)}"
+                oncomplete="PF('dlgUser').show();">
+                <i class="fa-solid fa-user"></i>
+              </p:commandLink>
+            </p:column>
+          </p:dataTable>
+        </div>
+      </h:form>
+
+      <p:dialog widgetVar="dlgUser" header="#{usersController.actionName}" modal="true" height="330" width="500">
+        <h:form id="dlgForm">
+          <div class="form_div">
+            <div class="div_form_grid_two_col">
+
+              <h:outputLabel class="label_wa">Vardas</h:outputLabel>
+              <p:inputText id="insert_name" value="#{usersController.object.name}"
+                validatorMessage="Min 2 simboliai" class="input_wa">
+                <f:validateLength minimum="2" />
+              </p:inputText>
+              <br />
+              <h:message for="insert_name" id="insert_name_msg" class="jsf_error_msg" />
+
+              <h:outputLabel for="insert_password" class="label_wa" rendered="#{usersController.creatingNewObject}">Slaptažodis</h:outputLabel>
+              <p:password id="insert_password" value="#{usersController.passwordString}"
+                toggleMask="true"
+                redisplay="true"
+                validator="#{jsfValidatorsUser.password}"
+                rendered="#{usersController.creatingNewObject}"
+                class="input_wa" />
+              <h:outputText rendered="#{usersController.creatingNewObject}" escape="false" value="&#160;" />
+              <h:message for="insert_password" id="insert_password_msg" class="jsf_error_msg" rendered="#{usersController.creatingNewObject}" />
+
+              <h:outputLabel for="insert_email" class="label_wa">El. paštas</h:outputLabel>
+              <p:inputText id="insert_email" value="#{usersController.object.email}" class="input_wa"
+                validator="#{jsfValidators.email}"
+              />
+              <br />
+              <h:message for="insert_email" id="insert_email_msg" class="jsf_error_msg" />
+
+              <h:outputLabel for="insert_role" class="label_wa">Tipas</h:outputLabel>
+
+              <p:selectOneMenu id="insert_role" value="#{usersController.object.role}"
+                converter="userRoleConverter"
+                validator="#{jsfValidators.notNull}">
+                <f:selectItem itemValue="#{null}" itemLabel="--nepasirinkta--" />
+                <f:selectItems value="#{usersController.getAllRoles()}" var="object" itemValue="#{object}"
+                  itemLabel="#{object.label}" />
+              </p:selectOneMenu>
+              <br />
+              <h:message for="insert_role" id="insert_role_msg" class="jsf_error_msg" />
+
+              <p:commandButton
+                id="insert-button"
+                value="Įvesti"
+                actionListener="#{usersController.saveObject}"
+                oncomplete="if(args &amp;&amp; !args.validationFailed) { PF('dlgUser').hide(); }"
+                partialSubmit="true"
+                process="dlgForm"
+                ajax="true"
+                update="dlgForm content_form"
+                styleClass="button_wa" />
+
+            </div>
+          </div>
+        </h:form>
+      </p:dialog>
+
+    </ui:define>
+
+  </ui:composition>
+
+</html>
