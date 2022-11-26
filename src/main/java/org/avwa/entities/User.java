@@ -16,7 +16,7 @@ public class User extends EntityBase {
     public String email;
 
     @Enumerated(EnumType.STRING)
-    public UserRoleEnum role;
+    private UserRoleEnum role;
 
     private byte[] passwordHash;
 

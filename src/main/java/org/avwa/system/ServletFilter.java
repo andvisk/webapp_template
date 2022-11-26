@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.Set;
 
 import org.apache.oltu.oauth2.common.OAuthProviderType;
+import org.avwa.system.authentication.oAuth.OAuthProvider;
+import org.avwa.system.authentication.oAuth.OltuAuthenticator;
 import org.avwa.system.authentication.oAuth.SecurityConfiguration;
 import org.avwa.utils.PathUtils;
 import org.slf4j.Logger;
@@ -14,6 +16,8 @@ import org.slf4j.Logger;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.faces.application.ResourceHandler;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -32,6 +36,12 @@ public class ServletFilter implements Filter {
 
     @Inject
     Logger log;
+
+    @PersistenceContext
+    private EntityManager em;
+
+    @Inject
+    OltuAuthenticator oltuAuthenticator;
 
     FilterConfig filterConfig;
 
@@ -60,8 +70,6 @@ public class ServletFilter implements Filter {
         String rootUri = requestPath.substring(0, indexOfSecondSlash);
         String uri = requestPath.substring(indexOfSecondSlash);
 
-        // Set<String> resourcePaths = servletContext.getResourcePaths("/");
-
         if (requestPath.endsWith("/")) {
             // requested directory
             Set<String> paths = servletContext.getResourcePaths(uri);
@@ -72,39 +80,48 @@ public class ServletFilter implements Filter {
                 requestPath = rootUri + "/" + pageNotFoundUri;
 
         } else {
-            if (!requestPath.contains(ResourceHandler.RESOURCE_IDENTIFIER)) {
+            if (!requestPath.contains(ResourceHandler.RESOURCE_IDENTIFIER)) { // if request is not for resource
                 int lastSlashIndex = uri.lastIndexOf("/");
                 String path = uri.substring(0, lastSlashIndex + 1);
                 String fileName = uri.substring(lastSlashIndex + 1);
-                if (fileName.indexOf(".") < 0) {
+                if (fileName.indexOf(".") < 0) { // requested file name (with extension)
                     fileName += xhtmlExtension;
                 }
                 Set<String> paths = servletContext.getResourcePaths(path);
                 if (!PathUtils.containsPage(paths, fileName))
+                    // no page for request
                     requestPath = rootUri + "/" + pageNotFoundUri;
                 else
+                    // final request path
                     requestPath = rootUri + path + fileName;
 
+                // OAuth2.0
                 String login = req.getParameter("login");
                 String requestPathWithoutRoot = requestPath.substring(indexOfSecondSlash);
                 if (login != null && requestPathWithoutRoot.equalsIgnoreCase("/login.xhtml")) {
 
                     log.debug("OAuth login with " + login);
-                    /*if (login.compareTo("facebook") == 0) {
-                        oltuAuthenticator.getCode((HttpServletResponse) res, OAuthProviderType.FACEBOOK,
-                                SecurityConfiguration.facebookClientID, null, SecurityConfiguration.facebookReturnURL);
+                    if (login.compareTo("facebook") == 0) {
+                        OAuthProvider oAuthProvider = SecurityConfiguration.getProvider(em, OAuthProviderType.FACEBOOK);
+                        oltuAuthenticator.getCode((HttpServletResponse) resp, OAuthProviderType.FACEBOOK,
+                                oAuthProvider.getClientId(), null, oAuthProvider.getReturnUrl());
                     }
 
                     if (login.compareTo("google") == 0) {
-                        oltuAuthenticator.getCode((HttpServletResponse) res, OAuthProviderType.GOOGLE,
-                                SecurityConfiguration.googleClientID, "email profile",
-                                SecurityConfiguration.googleReturnURL);
-                    }*/
+                        OAuthProvider oAuthProvider = SecurityConfiguration.getProvider(em, OAuthProviderType.GOOGLE);
+
+                        oltuAuthenticator.getCode((HttpServletResponse) resp, OAuthProviderType.GOOGLE,
+                                oAuthProvider.getClientId(), "email profile",
+                                oAuthProvider.getReturnUrl());
+                    }
                 }
             }
         }
 
         if (!requestPath.equalsIgnoreCase(reguestPathInitial)) {
+            // on request with only application path without leading slash
+            // request is redirected with added leading slash to the request path
+            // - all other requests have indexOfSecondFlash
             if (indexOfSecondSlash > 0) {
                 requestPath = requestPath.substring(indexOfSecondSlash);
                 RequestDispatcher dispatcher = httpRequest.getRequestDispatcher(requestPath);

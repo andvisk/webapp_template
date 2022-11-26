@@ -36,8 +36,8 @@ dependencies {
 }
 
 def archiveName_ = 'testMe.war'
-//def wildflyDeployDir = '/home/ksivdna/Downloads/wildfly-27.0.0.Beta1/standalone/deployments'
-def wildflyDeployDir = '/Users/agnegv/Desktop/andrius/wildfly-27.0.0.Final/standalone/deployments'
+def wildflyDeployDir = '/home/ksivdna/Downloads/wildfly-27.0.0.Beta1/standalone/deployments'
+//def wildflyDeployDir = '/Users/agnegv/Desktop/andrius/wildfly-27.0.0.Final/standalone/deployments'
 
 task undeploy(type:Exec) {
     workingDir wildflyDeployDir

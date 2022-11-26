@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,21 +25,16 @@ public class ReturnServletUtil {
     @Inject
     OltuAuthenticator oltuAuthenticator;
 
+    @PersistenceContext
+    private EntityManager em;
+
     public void doGet(HttpServletRequest request, HttpServletResponse response, OAuthProviderType oAuthProviderType)
             throws ServletException, IOException {
         String code = request.getParameter("code");
         if (code != null) {
             try {
 
-                OAuthProvider oAuthProvider = null;
-
-                if (oAuthProviderType.compareTo(OAuthProviderType.FACEBOOK) == 0) {
-                    oAuthProvider = SecurityConfiguration.facebookProvider;
-                }
-
-                if (oAuthProviderType.compareTo(OAuthProviderType.GOOGLE) == 0) {
-                    oAuthProvider = SecurityConfiguration.googleProvider;
-                }
+                OAuthProvider oAuthProvider = SecurityConfiguration.getProvider(em, oAuthProviderType);
 
                 OAuthAuthzResponse oar = OAuthAuthzResponse.oauthCodeAuthzResponse(request);
                 String codeFromServer = oar.getCode();
