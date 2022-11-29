@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class LazyDataModelExt<T> extends LazyDataModel<T> {
 
-    Logger log = LoggerFactory.getLogger(LazyDataModelExt.class);
+    private static Logger log = LoggerFactory.getLogger(LazyDataModelExt.class);
 
     private EntitiesService entitiesService;
 

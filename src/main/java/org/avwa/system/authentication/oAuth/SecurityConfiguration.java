@@ -2,7 +2,6 @@ package org.avwa.system.authentication.oAuth;
 
 import java.util.List;
 
-import org.apache.oltu.oauth2.common.OAuthProviderType;
 import org.avwa.entities.OAuthProperties;
 import org.avwa.enums.OAuthPropertiesNamesEnum;
 import org.avwa.utils.AnnotationsUtils;

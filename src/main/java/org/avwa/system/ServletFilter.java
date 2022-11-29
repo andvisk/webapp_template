@@ -6,8 +6,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 
-import org.apache.oltu.oauth2.common.OAuthProviderType;
+import org.avwa.system.authentication.oAuth.OAuth;
 import org.avwa.system.authentication.oAuth.OAuthProvider;
+import org.avwa.system.authentication.oAuth.OAuthProviderType;
 import org.avwa.system.authentication.oAuth.OltuAuthenticator;
 import org.avwa.system.authentication.oAuth.SecurityConfiguration;
 import org.avwa.utils.PathUtils;
@@ -41,7 +42,7 @@ public class ServletFilter implements Filter {
     private EntityManager em;
 
     @Inject
-    OltuAuthenticator oltuAuthenticator;
+    OAuth oAuth;
 
     FilterConfig filterConfig;
 
@@ -83,36 +84,32 @@ public class ServletFilter implements Filter {
             if (!requestPath.contains(ResourceHandler.RESOURCE_IDENTIFIER)) { // if request is not for resource
                 int lastSlashIndex = uri.lastIndexOf("/");
                 String path = uri.substring(0, lastSlashIndex + 1);
-                String fileName = uri.substring(lastSlashIndex + 1);
-                if (fileName.indexOf(".") < 0) { // requested file name (with extension)
-                    fileName += xhtmlExtension;
-                }
-                Set<String> paths = servletContext.getResourcePaths(path);
-                if (!PathUtils.containsPage(paths, fileName))
-                    // no page for request
-                    requestPath = rootUri + "/" + pageNotFoundUri;
-                else
-                    // final request path
-                    requestPath = rootUri + path + fileName;
 
-                // OAuth2.0
-                String login = req.getParameter("login");
-                String requestPathWithoutRoot = requestPath.substring(indexOfSecondSlash);
-                if (login != null && requestPathWithoutRoot.equalsIgnoreCase("/login.xhtml")) {
+                if (!path.equalsIgnoreCase("/socialauth/")) {// skip OAuth requests on return url
 
-                    log.debug("OAuth login with " + login);
-                    if (login.compareTo("facebook") == 0) {
-                        OAuthProvider oAuthProvider = SecurityConfiguration.getProvider(em, OAuthProviderType.FACEBOOK);
-                        oltuAuthenticator.getCode((HttpServletResponse) resp, OAuthProviderType.FACEBOOK,
-                                oAuthProvider.getClientId(), null, oAuthProvider.getReturnUrl());
+                    String fileName = uri.substring(lastSlashIndex + 1);
+                    if (fileName.indexOf(".") < 0) { // requested file name (with extension)
+                        fileName += xhtmlExtension;
                     }
+                    Set<String> paths = servletContext.getResourcePaths(path);
+                    if (!PathUtils.containsPage(paths, fileName))
+                        // no page for request
+                        requestPath = rootUri + "/" + pageNotFoundUri;
+                    else
+                        // final request path
+                        requestPath = rootUri + path + fileName;
 
-                    if (login.compareTo("google") == 0) {
-                        OAuthProvider oAuthProvider = SecurityConfiguration.getProvider(em, OAuthProviderType.GOOGLE);
+                    // OAuth2.0
+                    String login = req.getParameter("login");
+                    String requestPathWithoutRoot = requestPath.substring(indexOfSecondSlash);
+                    if (login != null && requestPathWithoutRoot.equalsIgnoreCase("/login.xhtml")) {
 
-                        oltuAuthenticator.getCode((HttpServletResponse) resp, OAuthProviderType.GOOGLE,
-                                oAuthProvider.getClientId(), "email profile",
-                                oAuthProvider.getReturnUrl());
+                        log.debug("OAuth login with " + login);
+
+                        OAuthProviderType providerType = OAuthProviderType.valueOf(login.toUpperCase());
+                        if (providerType != null) {
+                            oAuth.getCode(httpResponse, providerType);
+                        }
                     }
                 }
             }

@@ -1,7 +1,7 @@
 package org.avwa.entities;
 
-import org.apache.oltu.oauth2.common.OAuthProviderType;
 import org.avwa.enums.OAuthPropertiesNamesEnum;
+import org.avwa.system.authentication.oAuth.OAuthProviderType;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
