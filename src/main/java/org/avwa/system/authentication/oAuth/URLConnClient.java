@@ -1,17 +1,20 @@
 package org.avwa.system.authentication.oAuth;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.apache.oltu.oauth2.common.utils.OAuthUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +77,10 @@ public class URLConnClient {
             }
 
             String responseString = null;
-            responseString = OAuthUtils.saveStreamAsString(responseBody);
+            responseString = new BufferedReader(
+                    new InputStreamReader(responseBody, StandardCharsets.UTF_8))
+                    .lines()
+                    .collect(Collectors.joining("\n"));
             return responseString;
         } catch (IOException e) {
             log.error(e.getMessage(), e);
@@ -84,7 +90,7 @@ public class URLConnClient {
 
     private void setRequestBody(String body, String requestMethod, HttpURLConnection httpURLConnection)
             throws IOException {
-        if (OAuthUtils.isEmpty(body)) {
+        if (body == null || body.length() == 0) {
             return;
         }
 

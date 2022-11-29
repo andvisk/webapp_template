@@ -14,6 +14,8 @@ public class SessionEJB {
 
     private User user;
 
+    private String oAuthState = "noState";
+
     @PostConstruct
     public void init() {
         user = null;
@@ -33,4 +35,13 @@ public class SessionEJB {
         }
         return "user_not_logged_in";
     }
+
+    public String getoAuthState() {
+        return oAuthState;
+    }
+
+    public void setoAuthState(String oAuthState) {
+        this.oAuthState = oAuthState;
+    }
+
 }

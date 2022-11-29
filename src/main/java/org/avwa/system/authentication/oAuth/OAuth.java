@@ -4,7 +4,9 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
+import org.avwa.system.SessionEJB;
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
@@ -25,11 +27,12 @@ public class OAuth {
     @PersistenceContext
     private EntityManager em;
 
+    @Inject
+    SessionEJB sessionEJB;
+
     final static String GET = "GET";
     final static String POST = "POST";
     final static String PUT = "PUT";
-
-    private String state = null;
 
     public void getCode(HttpServletResponse servletResponse, OAuthProviderType providerType) {
         try {
@@ -37,7 +40,8 @@ public class OAuth {
             OAuthProvider oAuthProvider = SecurityConfiguration.getProvider(em, providerType);
 
             final UUID uuid = UUID.randomUUID();
-            state = uuid.toString();
+            String state = uuid.toString();
+            sessionEJB.setoAuthState(state);
 
             String uri = providerType.getGetCodeUri() + "?" + String.format(
                     "prompt=consent&response_type=code&client_id=%1$s&redirect_uri=%2$s&state=%3$s&scope=%4$s",
@@ -53,13 +57,21 @@ public class OAuth {
         }
     }
 
-    public Map<String, String> getResources(String code, OAuthProviderType providerType) {
+    public Map<String, String> getResources(String code, String state, OAuthProviderType providerType) {
 
-        //todo check state
+        // todo check state
 
         OAuthProvider oAuthProvider = SecurityConfiguration.getProvider(em, providerType);
 
         try {
+
+            if (!state.equals(sessionEJB.getoAuthState())) {
+                throw new Exception("State doesn't match");
+            }else{
+                log.debug("states matches");
+            }
+
+
             String requestUri = providerType.getAccessTokenUri();
 
             String body = "client_id=" + oAuthProvider.getClientId() +
@@ -87,9 +99,13 @@ public class OAuth {
             log.debug("request:" + requestUri);
             log.debug("response:" + responseJson);
 
-            map = new Gson().fromJson(responseJson,
+            if(!Pattern.compile(".+\"error\":.+").matcher(responseJson).matches()){
+                map = new Gson().fromJson(responseJson,
                     new TypeToken<HashMap<String, String>>() {
                     }.getType());
+            }else{
+                return null;
+            }
 
             return map;
 

@@ -27,15 +27,16 @@ public class ReturnServlet extends HttpServlet {
 
         String provider = request.getParameter("provider").toUpperCase();
         String code = request.getParameter("code");
+        String state = request.getParameter("state");
 
         if (code != null) {
             OAuthProviderType providerType = OAuthProviderType.valueOf(provider);
 
-            Map<String, String> resources = oAuth.getResources(code, providerType);
+            Map<String, String> resources = oAuth.getResources(code, state, providerType);
 
             if (resources != null) {
 
-                log.warn("check local user, in case not found - persist if not error");
+                log.warn("check local user, in case not found - persist");
 
             }
         }

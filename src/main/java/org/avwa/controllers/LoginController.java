@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.avwa.entities.User;
-import org.avwa.enums.UserRoleEnum;
 import org.avwa.system.SessionEJB;
 import org.avwa.utils.AnnotationsUtils;
 import org.avwa.utils.Pbkdf2;

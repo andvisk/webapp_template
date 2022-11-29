@@ -7,10 +7,7 @@ import java.util.Date;
 import java.util.Set;
 
 import org.avwa.system.authentication.oAuth.OAuth;
-import org.avwa.system.authentication.oAuth.OAuthProvider;
 import org.avwa.system.authentication.oAuth.OAuthProviderType;
-import org.avwa.system.authentication.oAuth.OltuAuthenticator;
-import org.avwa.system.authentication.oAuth.SecurityConfiguration;
 import org.avwa.utils.PathUtils;
 import org.slf4j.Logger;
 
