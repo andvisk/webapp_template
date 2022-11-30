@@ -4,7 +4,9 @@ import java.util.Map;
 
 import org.avwa.entities.User;
 import org.avwa.enums.UserRoleEnum;
+import org.avwa.enums.UserTypeEnum;
 import org.avwa.pfUtils.LazyDataModelExt;
+import org.avwa.system.authentication.oAuth.OAuthProviderType;
 import org.avwa.utils.AnnotationsUtils;
 import org.avwa.utils.Pbkdf2;
 import org.primefaces.model.FilterMeta;
@@ -108,6 +110,7 @@ public class UsersController extends BaseController<User> {
 
     public void prepareForNewObject() {
         object = new User();
+        object.setType(UserTypeEnum.LOCAL);
         creatingNewObject = true;
         actionName = "Naujas vartotojas";
     }
@@ -148,5 +151,9 @@ public class UsersController extends BaseController<User> {
 
     public UserRoleEnum[] getAllRoles() {
         return UserRoleEnum.values();
+    }
+
+    public OAuthProviderType[] getAllOAuthProviderTypes(){
+        return OAuthProviderType.values();
     }
 }

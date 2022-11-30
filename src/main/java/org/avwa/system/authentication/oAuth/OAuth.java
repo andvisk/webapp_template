@@ -12,13 +12,13 @@ import org.slf4j.Logger;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import jakarta.ejb.Stateful;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletResponse;
 
-@Stateful
+@Stateless
 public class OAuth {
 
     @Inject

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.avwa.entities.User;
+import org.avwa.enums.UserTypeEnum;
 import org.avwa.system.SessionEJB;
 import org.avwa.utils.AnnotationsUtils;
 import org.avwa.utils.Pbkdf2;
@@ -39,9 +40,9 @@ public class LoginController extends BaseController<User> {
     public boolean authenticate() {
 
         String query = "SELECT e FROM " + AnnotationsUtils.getEntityName(User.class)
-                + " e WHERE e.email = :email";
+                + " e WHERE e.email = :email AND e.type = " + UserTypeEnum.class.getCanonicalName() + ".LOCAL";
 
-        Map parameters = new HashMap<>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("email", email);
         User userFromDb = (User) entService.find(query, parameters);
 

@@ -1,14 +1,12 @@
 package org.avwa.enums;
 
-public enum UserRoleEnum {
+public enum UserTypeEnum {
 
-    ADMIN("Administratorius"), 
-    REGULAR("Paprastas"),
-    PUBLIC("Viešas");
+    LOCAL("Lokalus"), SOCIAL("Socialinių tinklų");
 
     private final String label;
 
-    UserRoleEnum(String label) {
+    UserTypeEnum(String label) {
         this.label = label;
     }
 

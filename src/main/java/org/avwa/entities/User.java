@@ -1,6 +1,8 @@
 package org.avwa.entities;
 
 import org.avwa.enums.UserRoleEnum;
+import org.avwa.enums.UserTypeEnum;
+import org.avwa.system.authentication.oAuth.OAuthProviderType;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,12 +17,44 @@ public class User extends EntityBase {
 
     public String email;
 
+    public String social_id;
+
     @Enumerated(EnumType.STRING)
     private UserRoleEnum role;
+
+    @Enumerated(EnumType.STRING)
+    private UserTypeEnum type;
+
+    @Enumerated(EnumType.STRING)
+    private OAuthProviderType social_type;
 
     private byte[] passwordHash;
 
     private byte[] salt;
+
+    public String getSocial_id() {
+        return social_id;
+    }
+
+    public void setSocial_id(String social_id) {
+        this.social_id = social_id;
+    }
+
+    public OAuthProviderType getSocial_type() {
+        return social_type;
+    }
+
+    public void setSocial_type(OAuthProviderType social_type) {
+        this.social_type = social_type;
+    }
+
+    public UserTypeEnum getType() {
+        return type;
+    }
+
+    public void setType(UserTypeEnum type) {
+        this.type = type;
+    }
 
     public byte[] getSalt() {
         return salt;

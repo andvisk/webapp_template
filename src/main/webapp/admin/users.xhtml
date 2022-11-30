@@ -61,6 +61,17 @@
               <h:outputText value="#{user.role.label}" />
             </p:column>
 
+            <p:column headerText="Socialinis tinklas" sortBy="#{user.social_type}" filterBy="#{user.social_type}" filterValue="#{usersController.object.social_type}">
+              <f:facet name="filter">
+                <p:selectOneMenu onchange="PF('userTable').filter()" styleClass="ui-custom-filter" converter="oAuthProviderTypeConverter">
+                  <f:selectItem itemLabel="Visi" itemValue="#{null}" noSelectionOption="true" />
+                  <f:selectItems value="#{usersController.getAllOAuthProviderTypes()}" var="object" itemValue="#{object}" itemLabel="#{object.label}" />
+                </p:selectOneMenu>
+              </f:facet>
+
+              <h:outputText value="#{user.social_type.label}" />
+            </p:column>
+
             <p:column style="width:50px;">
               <p:commandLink
                 update="@widgetVar(dlgUser) dlgForm"

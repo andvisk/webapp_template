@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import org.avwa.controllers.UsersController;
 import org.avwa.entities.User;
+import org.avwa.enums.UserTypeEnum;
 import org.avwa.utils.AnnotationsUtils;
 import org.slf4j.Logger;
 
@@ -52,7 +53,7 @@ public class JsfValidatorsUser {
                 if (usersController.getObject().getId() == null) {
                     TypedQuery<User> query = em.createQuery(
                             "SELECT e FROM " + AnnotationsUtils.getEntityName(User.class)
-                                    + " e WHERE e.email = :email",
+                                    + " e WHERE e.email = :email AND e.type = " + UserTypeEnum.class.getCanonicalName() + ".LOCAL",
                             User.class);
                     List<User> list = query.setParameter("email", testValue).getResultList();
                     if (list.size() > 0) {
