@@ -9,6 +9,8 @@ import org.avwa.entities.User;
 import org.avwa.enums.UserRoleEnum;
 import org.avwa.enums.UserTypeEnum;
 import org.avwa.jpaUtils.EntitiesService;
+import org.avwa.system.ApplicationEJB;
+import org.avwa.system.JsfUtilsEJB;
 import org.avwa.utils.AnnotationsUtils;
 import org.slf4j.Logger;
 
@@ -31,6 +33,14 @@ public class ReturnServlet extends HttpServlet {
     @Inject
     EntitiesService entService;
 
+    @Inject
+    JsfUtilsEJB jsfUtilsEJB;
+
+    @Inject
+    ApplicationEJB applicationEJB;
+
+    private final String landingPage = "/index.xhtml";
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -38,6 +48,7 @@ public class ReturnServlet extends HttpServlet {
         String provider = request.getParameter("provider").toUpperCase();
         String code = request.getParameter("code");
         String state = request.getParameter("state");
+        String error = request.getParameter("error");
 
         if (code != null) {
             OAuthProviderType providerType = OAuthProviderType.valueOf(provider);
@@ -84,8 +95,17 @@ public class ReturnServlet extends HttpServlet {
                     log.debug("oAuth user already in db");
                 }
 
+                response.sendRedirect(applicationEJB.getContextPath() + "/");
+                // jsfUtilsEJB.forwardWithDispatcher(request, response, landingPage); // landing
+                // page
+
             } else {
                 log.warn("failed oAuth login");
+                jsfUtilsEJB.redirectTo("login"); // todo test
+            }
+        } else {
+            if (error != null) {
+asdfsadf
             }
         }
     }

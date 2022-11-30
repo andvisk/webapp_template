@@ -46,6 +46,7 @@ public class ServletFilter implements Filter {
     private final String xhtmlExtension = ".xhtml";
     private final String defaultDirectoryPage = "index.xhtml";
     private final String pageNotFoundUri = "pageNotFound.xhtml";
+    private final String socialAuthUri = "socialauth";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -64,25 +65,27 @@ public class ServletFilter implements Filter {
         String requestPath = httpRequest.getRequestURI();
         String reguestPathInitial = requestPath;
 
+        log.debug("requested path:" + requestPath);
+
         int indexOfSecondSlash = requestPath.indexOf("/", 1);
         String rootUri = requestPath.substring(0, indexOfSecondSlash);
         String uri = requestPath.substring(indexOfSecondSlash);
 
-        if (requestPath.endsWith("/")) {
-            // requested directory
-            Set<String> paths = servletContext.getResourcePaths(uri);
+        if (!requestPath.equals(rootUri + "/" + socialAuthUri)) {// skip OAuth requests on return url
 
-            if (PathUtils.containsPage(paths, defaultDirectoryPage))
-                requestPath += "index.xhtml";
-            else
-                requestPath = rootUri + "/" + pageNotFoundUri;
+            if (requestPath.endsWith("/")) {
+                // requested directory
+                Set<String> paths = servletContext.getResourcePaths(uri);
 
-        } else {
-            if (!requestPath.contains(ResourceHandler.RESOURCE_IDENTIFIER)) { // if request is not for resource
-                int lastSlashIndex = uri.lastIndexOf("/");
-                String path = uri.substring(0, lastSlashIndex + 1);
+                if (PathUtils.containsPage(paths, defaultDirectoryPage))
+                    requestPath += "index.xhtml";
+                else
+                    requestPath = rootUri + "/" + pageNotFoundUri;
 
-                if (!path.equalsIgnoreCase("/socialauth/")) {// skip OAuth requests on return url
+            } else {
+                if (!requestPath.contains(ResourceHandler.RESOURCE_IDENTIFIER)) { // if request is not for resource
+                    int lastSlashIndex = uri.lastIndexOf("/");
+                    String path = uri.substring(0, lastSlashIndex + 1);
 
                     String fileName = uri.substring(lastSlashIndex + 1);
                     if (fileName.indexOf(".") < 0) { // requested file name (with extension)
@@ -97,7 +100,7 @@ public class ServletFilter implements Filter {
                         requestPath = rootUri + path + fileName;
 
                     // OAuth2.0
-                    String login = req.getParameter("login");
+                    String login = req.getParameter("login"); // value = oauth provider type
                     String requestPathWithoutRoot = requestPath.substring(indexOfSecondSlash);
                     if (login != null && requestPathWithoutRoot.equalsIgnoreCase("/login.xhtml")) {
 
@@ -106,6 +109,7 @@ public class ServletFilter implements Filter {
                         OAuthProviderType providerType = OAuthProviderType.valueOf(login.toUpperCase());
                         if (providerType != null) {
                             oAuth.getCode(httpResponse, providerType);
+                            return;
                         }
                     }
                 }
@@ -118,9 +122,11 @@ public class ServletFilter implements Filter {
             // - all other requests have indexOfSecondFlash
             if (indexOfSecondSlash > 0) {
                 requestPath = requestPath.substring(indexOfSecondSlash);
+                log.debug("dispatch forward to:"+requestPath);
                 RequestDispatcher dispatcher = httpRequest.getRequestDispatcher(requestPath);
                 try {
                     dispatcher.forward(httpRequest, httpResponse);
+                    return;
                 } catch (ServletException e) {
                     log.error(e.getMessage(), e);
                 }
