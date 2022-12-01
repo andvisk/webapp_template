@@ -135,7 +135,6 @@ public class ServletFilter implements Filter {
 
         // set headers for resources caching
         if (requestPath.contains(ResourceHandler.RESOURCE_IDENTIFIER)) {
-            Date date = new Date();
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.MONTH, 1);
             ((HttpServletResponse) resp).setHeader("Expires", String.valueOf(calendar.getTimeInMillis()));

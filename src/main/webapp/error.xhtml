@@ -11,17 +11,22 @@
     xmlns:fn="jakarta.tags.functions"
     xmlns:p="http://primefaces.org/ui"
 >
+
     <ui:composition template="layout/layout.xhtml">
 
-        <ui:define name="title">Landing page</ui:define>
+        <ui:define name="title">Klaida</ui:define>
 
         <ui:define name="main_content">
 
             <div>
-                <h:outputText value="Landing page" />
+                <h:outputText value="#{sessionEJB.messages['error_msg']}" class="label_wa" />
+                <br />
+                <h:outputText value="#{sessionEJB.messages['error_description']}" class="label_wa" />
             </div>
 
         </ui:define>
 
     </ui:composition>
+
 </html>
+

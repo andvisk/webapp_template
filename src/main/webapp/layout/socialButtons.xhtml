@@ -1,18 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
 
-<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<ui:composition
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="jakarta.faces.html">
 
-    <div id="socialLogin">
-        <div class="btn-group">
-            <i class="fab fa-google" style="width:16px; height:20px"></i>
-            <a class='btn btn-danger' href='#{applicationEJB.contextPath}/login.xhtml?login=google' style="width:12em;">Prisijungti su Google</a>
-        </div>
-        <br />
-        <br />
-        <div class="btn-group">
-            <i class="fab fa-google" style="width:16px; height:20px"></i>
-            <a class='btn btn-danger' href='#{applicationEJB.contextPath}/login.xhtml?login=facebook' style="width:12em;">Prisijungti su Facebook</a>
-        </div>
+    <div style="display: flex; margin-top: 10px;">
+        <h:panelGroup rendered="#{applicationEJB.getPropertyAsBoolean('ALLOW_SOCIAL_LOGIN','GOOGLE')}">
+            <a class='button_login_social' href='#{applicationEJB.contextPath}/login?login=google' style="background-color: red; margin-right: 5px;">
+                <i class="fab fa-google" style="font-size: 20; color: white;"></i>
+            </a>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{applicationEJB.getPropertyAsBoolean('ALLOW_SOCIAL_LOGIN','FACEBOOK')}">
+            <a class='button_login_social' href='#{applicationEJB.contextPath}/login?login=facebook' style="background-color: blue;">
+                <i class="fab fa-facebook-f" style="font-size: 20; color: white;"></i>
+            </a>
+        </h:panelGroup>
+
     </div>
 
 </ui:composition>

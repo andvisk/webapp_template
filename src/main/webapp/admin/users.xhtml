@@ -85,7 +85,7 @@
         </div>
       </h:form>
 
-      <p:dialog widgetVar="dlgUser" header="#{usersController.actionName}" modal="true" height="330" width="500">
+      <p:dialog widgetVar="dlgUser" header="#{usersController.actionName}" modal="true" height="300" width="450">
         <h:form id="dlgForm">
           <div class="form_div">
             <div class="div_form_grid_two_col">
@@ -98,22 +98,22 @@
               <br />
               <h:message for="insert_name" id="insert_name_msg" class="jsf_error_msg" />
 
-              <h:outputLabel for="insert_password" class="label_wa" rendered="#{usersController.creatingNewObject}">Slaptažodis</h:outputLabel>
-              <p:password id="insert_password" value="#{usersController.passwordString}"
-                toggleMask="true"
-                redisplay="true"
-                validator="#{jsfValidatorsUser.password}"
-                rendered="#{usersController.creatingNewObject}"
-                class="input_wa" />
-              <h:outputText rendered="#{usersController.creatingNewObject}" escape="false" value="&#160;" />
-              <h:message for="insert_password" id="insert_password_msg" class="jsf_error_msg" rendered="#{usersController.creatingNewObject}" />
-
               <h:outputLabel for="insert_email" class="label_wa">El. paštas</h:outputLabel>
               <p:inputText id="insert_email" value="#{usersController.object.email}" class="input_wa"
-                validator="#{jsfValidators.email}"
+                validator="#{jsfValidatorsUser.email}"
               />
               <br />
               <h:message for="insert_email" id="insert_email_msg" class="jsf_error_msg" />
+
+              <h:outputLabel for="insert_password" class="label_wa" rendered="#{usersController.creatingNewObject}">Slaptažodis</h:outputLabel>
+              <p:password id="insert_password" value="#{usersController.passwordString}"
+                                               toggleMask="true"
+                                               redisplay="true"
+                                               validator="#{jsfValidatorsUser.password}"
+                                               rendered="#{usersController.creatingNewObject}"
+                                               class="input_wa" />
+              <h:outputText rendered="#{usersController.creatingNewObject}" escape="false" value="&#160;" />
+              <h:message for="insert_password" id="insert_password_msg" class="jsf_error_msg" rendered="#{usersController.creatingNewObject}" />
 
               <h:outputLabel for="insert_role" class="label_wa">Tipas</h:outputLabel>
 

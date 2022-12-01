@@ -1,5 +1,9 @@
 package org.avwa.system;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.avwa.entities.User;
 
 import jakarta.annotation.PostConstruct;
@@ -16,6 +20,8 @@ public class SessionEJB {
 
     private String oAuthState = "noState";
 
+    private Map<String, String> messages = new HashMap<>();
+
     @PostConstruct
     public void init() {
         user = null;
@@ -31,7 +37,11 @@ public class SessionEJB {
 
     public String getUserName() {
         if (user != null) {
-            return user.getName();
+            if (StringUtils.isNoneBlank(user.getName()))
+                return user.getName();
+            else {
+                return user.getEmail();
+            }
         }
         return "user_not_logged_in";
     }
@@ -42,6 +52,10 @@ public class SessionEJB {
 
     public void setoAuthState(String oAuthState) {
         this.oAuthState = oAuthState;
+    }
+
+    public Map<String, String> getMessages() {
+        return messages;
     }
 
 }

@@ -8,11 +8,13 @@ import jakarta.ejb.Stateless;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Named
 @Stateless
 public class JsfUtilsEJB {
 
@@ -30,13 +32,13 @@ public class JsfUtilsEJB {
         }
     }
 
-    public void forwardWithDispatcher(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String requestPath) {
+    public void forwardWithDispatcher(HttpServletRequest httpRequest, HttpServletResponse httpResponse,
+            String requestPath) {
         RequestDispatcher dispatcher = httpRequest.getRequestDispatcher(requestPath);
         try {
             dispatcher.forward(httpRequest, httpResponse);
-        } catch (IOException|ServletException e) {
+        } catch (IOException | ServletException e) {
             log.error(e.getMessage(), e);
         }
-
     }
 }

@@ -6,6 +6,8 @@ import org.avwa.entities.User;
 import org.avwa.enums.UserRoleEnum;
 import org.avwa.enums.UserTypeEnum;
 import org.avwa.pfUtils.LazyDataModelExt;
+import org.avwa.system.JsfUtilsEJB;
+import org.avwa.system.SessionEJB;
 import org.avwa.system.authentication.oAuth.OAuthProviderType;
 import org.avwa.utils.AnnotationsUtils;
 import org.avwa.utils.Pbkdf2;
@@ -24,6 +26,12 @@ public class UsersController extends BaseController<User> {
 
     @Inject
     Logger log;
+
+    @Inject
+    SessionEJB sessionEJB;
+
+    @Inject
+    JsfUtilsEJB jsfUtilsEJB;
 
     private User object;
     private Class clazz = User.class;
@@ -98,7 +106,7 @@ public class UsersController extends BaseController<User> {
 
     public void saveObject() {
         if (creatingNewObject) {
-            byte[] salt = Pbkdf2.getSalt(); 
+            byte[] salt = Pbkdf2.getSalt();
             byte[] passw = Pbkdf2.getHash(passwordString, salt);
             object.setPasswordHash(passw);
             object.setSalt(salt);
@@ -106,6 +114,26 @@ public class UsersController extends BaseController<User> {
         entService.merge(object);
         object = createNewObject(clazz);
         passwordString = "";
+    }
+
+    public void userRegistration() {
+
+        object.setType(UserTypeEnum.LOCAL);
+        object.setRole(UserRoleEnum.PUBLIC);
+
+        byte[] salt = Pbkdf2.getSalt();
+        byte[] passw = Pbkdf2.getHash(passwordString, salt);
+        object.setPasswordHash(passw);
+        object.setSalt(salt);
+
+        entService.merge(object);
+
+        sessionEJB.setUser(object);
+
+        object = createNewObject(clazz);
+        passwordString = "";
+
+       jsfUtilsEJB.redirectTo("/"); 
     }
 
     public void prepareForNewObject() {
@@ -153,7 +181,7 @@ public class UsersController extends BaseController<User> {
         return UserRoleEnum.values();
     }
 
-    public OAuthProviderType[] getAllOAuthProviderTypes(){
+    public OAuthProviderType[] getAllOAuthProviderTypes() {
         return OAuthProviderType.values();
     }
 }

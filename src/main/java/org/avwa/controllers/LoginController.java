@@ -34,11 +34,11 @@ public class LoginController extends BaseController<User> {
 
     private String passwordString;
 
-    private String message;
+    private String errorMsgKey = "error_msg";
 
     @PostConstruct
     public void init() {
-        message = "";
+
     }
 
     public void authenticate() {
@@ -57,21 +57,32 @@ public class LoginController extends BaseController<User> {
                 log.debug("authentication: passed");
                 sessionEJB.setUser(userFromDb);
 
-                jsfUtilsEJB.redirectTo(""); //landing page
+                jsfUtilsEJB.redirectTo(""); // landing page
+
+                return;
             }
         }
 
-        message = "Nepavyko prisijungti";
+        sessionEJB.getMessages().put(errorMsgKey, "Nepavyko prisijungti");
+
         sessionEJB.setUser(null);
         log.debug("authentication: failed");
     }
 
+    public void userForgotPassword() {
+        log.warn("Sending email to reset password");
+        email = "";
+    }
+
     public String getMessage() {
-        return message;
+        // use just one time, and clear
+        String msg = sessionEJB.getMessages().get(errorMsgKey);
+        sessionEJB.getMessages().put(errorMsgKey, "");
+        return msg;
     }
 
     public void setMessage(String message) {
-        this.message = message;
+        sessionEJB.getMessages().put(errorMsgKey, message);
     }
 
     public String getEmail() {

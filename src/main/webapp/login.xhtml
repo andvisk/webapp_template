@@ -25,7 +25,7 @@
             <div id="div_main_login_wrapper">
                 <div id="div_login_box">
                     <div id="div_login_content">
-                        <h:form id="dlgForm">
+                        <h:form id="loginForm">
                             <div class="div_form_grid_two_col">
                                 <h:outputText escape="false" value="&#160;" />
                                 <h:outputText escape="false" value="#{loginController.message}" class="jsf_error_msg_login_page" style="margin-bottom: 10px;" />
@@ -45,17 +45,43 @@
                                 <h:outputText escape="false" value="&#160;" />
                                 <h:message for="login_password" id="login_password_msg" class="jsf_error_msg_login_page" />
 
-                                <ui:include src="layout/socialButtons.xhtml" />
-
+                                <h:outputText escape="false" value="&#160;" />
                                 <p:commandButton
                                     id="login-button"
                                     value="Patvirtinti"
                                     actionListener="#{loginController.authenticate}"
                                     partialSubmit="true"
-                                    process="dlgForm"
+                                    process="loginForm"
                                     ajax="true"
-                                    update="dlgForm"
+                                    update="loginForm"
                                     styleClass="button_wa" />
+
+                                <h:outputText escape="false" value="&#160;" />
+
+                                <h:panelGroup rendered="#{applicationEJB.getPropertyAsBoolean('ALLOW_SOCIAL_LOGINS')}">
+                                    <ui:include src="layout/socialButtons.xhtml" />
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{applicationEJB.getPropertyAsBoolean('ALLOW_REGISTERING_USERS')}">
+                                    <h:outputText escape="false" value="&#160;" />
+                                    <p:commandLink value="Registruotis"
+                                        update="@widgetVar(dlgUser)"
+                                        resetValues="true"
+                                        oncomplete="PF('dlgUser').show();"
+                                        class="flow_right_within_div"
+                                        style="color: #20163e; margin-top: 10px;"
+                                        action="#{usersController.prepareForNewObject}" />
+                                </h:panelGroup>
+
+                                <h:outputText escape="false" value="&#160;" />
+                                <p:commandLink value="Pamiršau slaptažodį"
+                                    update="@widgetVar(dlgForgotPassword)"
+                                    resetValues="true"
+                                    oncomplete="PF('dlgForgotPassword').show();"
+                                    class="flow_right_within_div"
+                                    style="color: #20163e; margin-top: 10px;"
+                                    action="#{usersController.prepareForNewObject}" />
+
                             </div>
                         </h:form>
                     </div>
@@ -69,5 +95,88 @@
                 </div>
             </footer>
         </div>
+        <h:panelGroup rendered="#{applicationEJB.getPropertyAsBoolean('ALLOW_REGISTERING_USERS','')}">
+
+            <p:dialog widgetVar="dlgUser" header="#{usersController.actionName}" modal="true" height="280" width="450">
+                <h:form id="dlgForm">
+                    <div class="form_div">
+                        <div class="div_form_grid_two_col">
+
+                            <h:outputLabel class="label_wa">Vardas</h:outputLabel>
+                            <p:inputText id="insert_name" value="#{usersController.object.name}"
+                                validatorMessage="Min 2 simboliai" class="input_wa">
+                                <f:validateLength minimum="2" />
+                            </p:inputText>
+                            <br />
+                            <h:message for="insert_name" id="insert_name_msg" class="jsf_error_msg" />
+
+                            <h:outputLabel for="insert_email" class="label_wa">El. paštas</h:outputLabel>
+                            <p:inputText id="insert_email" value="#{usersController.object.email}" class="input_wa"
+                                validator="#{jsfValidatorsUser.email}"
+                            />
+                            <br />
+                            <h:message for="insert_email" id="insert_email_msg" class="jsf_error_msg" />
+
+                            <h:outputLabel for="insert_password" class="label_wa">Slaptažodis</h:outputLabel>
+                            <p:password id="insert_password" value="#{usersController.passwordString}"
+                                toggleMask="true"
+                                redisplay="true"
+                                validator="#{jsfValidatorsUser.password}"
+                                class="input_wa" />
+                            <h:outputText escape="false" value="&#160;" />
+                            <h:message for="insert_password" id="insert_password_msg" class="jsf_error_msg" />
+
+                            <h:outputText escape="false" value="&#160;" />
+                            <p:commandButton
+                                id="insert-button"
+                                value="Registruotis"
+                                actionListener="#{usersController.userRegistration}"
+                                oncomplete="if(args &amp;&amp; !args.validationFailed) { PF('dlgUser').hide(); }"
+                                partialSubmit="true"
+                                process="dlgForm"
+                                ajax="true"
+                                update="dlgForm"
+                                styleClass="button_wa" />
+
+                            <h:outputText escape="false" value="&#160;" />
+                            <h:panelGroup rendered="#{applicationEJB.getPropertyAsBoolean('ALLOW_SOCIAL_LOGINS')}">
+                                <ui:include src="layout/socialButtons.xhtml" />
+                            </h:panelGroup>
+
+                        </div>
+                    </div>
+                </h:form>
+            </p:dialog>
+        </h:panelGroup>
+
+        <p:dialog widgetVar="dlgForgotPassword" header="#{usersController.actionName}" modal="true" height="150" width="450">
+            <h:form id="dlgForgotPassword">
+                <div class="form_div">
+                    <div class="div_form_grid_two_col">
+
+                        <h:outputLabel for="forgot_email" class="label_wa">El. paštas</h:outputLabel>
+                        <p:inputText id="forgot_email" value="#{loginController.email}" class="input_wa"
+                            validator="#{jsfValidatorsUser.emailExisting}"
+                        />
+                        <br />
+                        <h:message for="forgot_email" id="insert_email_msg" class="jsf_error_msg" />
+
+                        <h:outputText escape="false" value="&#160;" />
+                        <p:commandButton
+                            id="send-email-button"
+                            value="Siųsti el.paštu"
+                            actionListener="#{loginController.userForgotPassword}"
+                            oncomplete="if(args &amp;&amp; !args.validationFailed) { PF('dlgUser').hide(); }"
+                            partialSubmit="true"
+                            process="dlgForgotPassword"
+                            ajax="true"
+                            update="dlgForgotPassword"
+                            styleClass="button_wa" />
+
+                    </div>
+                </div>
+            </h:form>
+        </p:dialog>
+
     </h:body>
 </html>

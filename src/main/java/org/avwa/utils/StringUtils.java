@@ -15,4 +15,20 @@ public class StringUtils {
         String saltStr = salt.toString();
         return saltStr;
     }
+
+    public static Boolean getAsBoolean(String value) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(value)) {
+            return false;
+        } else {
+            switch (value) {
+                case "true":
+                    return true;
+                case "false":
+                    return false;
+                default:
+                    return null;
+            }
+        }
+    }
+
 }

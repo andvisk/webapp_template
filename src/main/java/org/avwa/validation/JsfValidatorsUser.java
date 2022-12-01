@@ -39,23 +39,32 @@ public class JsfValidatorsUser {
 
         Pattern ptr = Pattern.compile("^(.+)@(\\S+)\\.(\\S+)$");
 
+        String reason = "";
+
         if (!ptr.matcher(testValue).matches()) {
-            FacesMessage msg = new FacesMessage("", "Patikrinkite el.p. adresą");
-            msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-            throw new ValidatorException(msg);
+            reason = "Patikrinkite el.p. adresą";
         } else {
-            String reason = "";
-
             if (testValue.length() >= 4) {
-
                 UsersController usersController = facesContext.getApplication().evaluateExpressionGet(facesContext,
                         "#{usersController}", UsersController.class);
-                if (usersController.getObject().getId() == null) {
+                if (usersController.getObject().getId() == null) { //creating new user
                     TypedQuery<User> query = em.createQuery(
                             "SELECT e FROM " + AnnotationsUtils.getEntityName(User.class)
-                                    + " e WHERE e.email = :email AND e.type = " + UserTypeEnum.class.getCanonicalName() + ".LOCAL",
+                                    + " e WHERE e.email = :email AND e.type = " + UserTypeEnum.class.getCanonicalName()
+                                    + ".LOCAL",
                             User.class);
                     List<User> list = query.setParameter("email", testValue).getResultList();
+                    if (list.size() > 0) {
+                        reason = "Tokiu el.paštu vartotojas jau yra";
+                    }
+                }else{ //changing existing user
+                    TypedQuery<User> query = em.createQuery(
+                            "SELECT e FROM " + AnnotationsUtils.getEntityName(User.class)
+                                    + " e WHERE e.email = :email AND e.type = " + UserTypeEnum.class.getCanonicalName()
+                                    + ".LOCAL AND e.id <> :id",
+                            User.class);
+                    query.setParameter("email", testValue);
+                    List<User> list = query.setParameter("id", usersController.getObject().getId()).getResultList();
                     if (list.size() > 0) {
                         reason = "Tokiu el.paštu vartotojas jau yra";
                     }
@@ -63,13 +72,50 @@ public class JsfValidatorsUser {
             } else {
                 reason = "Min 4 simboliai";
             }
-            if (reason.length() > 0) {
-                FacesMessage msg = new FacesMessage("", reason);
-                msg.setSeverity(FacesMessage.SEVERITY_ERROR);
-                throw new ValidatorException(msg);
+        }
+        if (reason.length() > 0) {
+            FacesMessage msg = new FacesMessage("", reason);
+            msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+            throw new ValidatorException(msg);
+        }
+    }
+
+    public void emailExisting(FacesContext facesContext,
+            UIComponent component, Object value) throws ValidatorException {
+        String testValue = value.toString();
+
+        Pattern ptr = Pattern.compile("^(.+)@(\\S+)\\.(\\S+)$");
+
+        String reason = "Patikrinkite el.p. adresą";
+
+        boolean passed = true;
+
+        if (!ptr.matcher(testValue).matches()) {
+            passed = false;
+        } else {
+            if (testValue.length() >= 4) {
+                UsersController usersController = facesContext.getApplication().evaluateExpressionGet(facesContext,
+                        "#{usersController}", UsersController.class);
+                if (usersController.getObject().getId() == null) {
+                    TypedQuery<User> query = em.createQuery(
+                            "SELECT e FROM " + AnnotationsUtils.getEntityName(User.class)
+                                    + " e WHERE e.email = :email AND e.type = " + UserTypeEnum.class.getCanonicalName()
+                                    + ".LOCAL",
+                            User.class);
+                    List<User> list = query.setParameter("email", testValue).getResultList();
+                    if (list.size() == 0) {
+                        passed = false;
+                    }
+                }
+            } else {
+                passed = false;
             }
         }
-
+        if (!passed) {
+            FacesMessage msg = new FacesMessage("", reason);
+            msg.setSeverity(FacesMessage.SEVERITY_ERROR);
+            throw new ValidatorException(msg);
+        }
     }
 
     public void password(FacesContext facesContext,

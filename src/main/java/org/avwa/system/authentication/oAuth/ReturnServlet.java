@@ -6,11 +6,13 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.avwa.entities.User;
+import org.avwa.enums.AppPropNamesEnum;
 import org.avwa.enums.UserRoleEnum;
 import org.avwa.enums.UserTypeEnum;
 import org.avwa.jpaUtils.EntitiesService;
 import org.avwa.system.ApplicationEJB;
 import org.avwa.system.JsfUtilsEJB;
+import org.avwa.system.SessionEJB;
 import org.avwa.utils.AnnotationsUtils;
 import org.slf4j.Logger;
 
@@ -39,7 +41,10 @@ public class ReturnServlet extends HttpServlet {
     @Inject
     ApplicationEJB applicationEJB;
 
-    private final String landingPage = "/index.xhtml";
+    @Inject
+    SessionEJB sessionEJB;
+
+    private final String loginPage = "/login";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -50,7 +55,11 @@ public class ReturnServlet extends HttpServlet {
         String state = request.getParameter("state");
         String error = request.getParameter("error");
 
-        if (code != null) {
+        boolean authenticationPassed = false;
+
+        if (applicationEJB.getPropertyAsBoolean(AppPropNamesEnum.ALLOW_SOCIAL_LOGINS.name()) &&
+                applicationEJB.getPropertyAsBoolean(AppPropNamesEnum.ALLOW_SOCIAL_LOGIN.name(), provider.toUpperCase()) &&
+                code != null) {
             OAuthProviderType providerType = OAuthProviderType.valueOf(provider);
 
             // get id, name and email
@@ -73,40 +82,58 @@ public class ReturnServlet extends HttpServlet {
 
                 User userFromDb = (User) entService.find(query, parameters);
 
-                if (userFromDb == null) { // create new user
+                if (userFromDb == null) { // create new user if permitted user registration
+                    if (applicationEJB.getPropertyAsBoolean(AppPropNamesEnum.ALLOW_REGISTERING_USERS.name())) {
+                        userFromDb = new User();
+                        userFromDb.setRole(UserRoleEnum.PUBLIC);
+                        if (StringUtils.isNoneBlank(social_name))
+                            userFromDb.setName(social_name);
+                        if (StringUtils.isNoneBlank(social_email))
+                            userFromDb.setEmail(social_email);
+                        userFromDb.setSocial_id(social_id);
+                        userFromDb.setSocial_type(providerType);
+                        userFromDb.setType(UserTypeEnum.SOCIAL);
 
-                    userFromDb = new User();
-                    userFromDb.setRole(UserRoleEnum.PUBLIC);
-                    if (StringUtils.isNoneBlank(social_name))
-                        userFromDb.setName(social_name);
-                    if (StringUtils.isNoneBlank(social_email))
-                        userFromDb.setEmail(social_email);
-                    userFromDb.setSocial_id(social_id);
-                    userFromDb.setSocial_type(providerType);
-                    userFromDb.setType(UserTypeEnum.SOCIAL);
+                        entService.merge(userFromDb);
 
-                    entService.merge(userFromDb);
-
-                    log.debug("social authentication: new user");
-
+                        authenticationPassed = true;
+                        sessionEJB.setUser(userFromDb);
+                        log.debug("social authentication: new user");
+                    } else {
+                        authenticationPassed = false;
+                        log.debug("user registration is no permitted");
+                    }
                     // message = "Prisijungta";
                     // sessionEJB.setUser(userFromDb);
                 } else {
+                    authenticationPassed = true;
+                    sessionEJB.setUser(userFromDb);
                     log.debug("oAuth user already in db");
                 }
 
-                response.sendRedirect(applicationEJB.getContextPath() + "/");
-                // jsfUtilsEJB.forwardWithDispatcher(request, response, landingPage); // landing
-                // page
+            }
+        }
+
+        if (!authenticationPassed) {
+
+            sessionEJB.setUser(null);
+
+            if (error != null) {
+                String error_code = request.getParameter("error_code");
+                String error_description = request.getParameter("error_description");
+                String error_reason = request.getParameter("error_reason");
+
+                log.warn("OAuth authentication failed: " + error_code + " " + error_description + " " + error_reason);
 
             } else {
                 log.warn("failed oAuth login");
-                jsfUtilsEJB.redirectTo("login"); // todo test
             }
+
+            sessionEJB.getMessages().put("error_msg", "Nepavyko prisijungti");
+
+            response.sendRedirect(applicationEJB.getContextPath() + loginPage); // login page
         } else {
-            if (error != null) {
-asdfsadf
-            }
+            response.sendRedirect(applicationEJB.getContextPath() + "/"); // landing page
         }
     }
 }
