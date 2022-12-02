@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.avwa.entities.User;
 import org.avwa.enums.UserTypeEnum;
+import org.avwa.freemarker.Freemarker;
+import org.avwa.system.ApplicationEJB;
 import org.avwa.system.JsfUtilsEJB;
 import org.avwa.system.SessionEJB;
 import org.avwa.utils.AnnotationsUtils;
@@ -29,6 +31,9 @@ public class LoginController extends BaseController<User> {
 
     @Inject
     JsfUtilsEJB jsfUtilsEJB;
+
+    @Inject
+    ApplicationEJB applicationEJB;
 
     private String email;
 
@@ -70,7 +75,18 @@ public class LoginController extends BaseController<User> {
     }
 
     public void userForgotPassword() {
-        log.warn("Sending email to reset password");
+
+        Map<String, Object> data = new HashMap<>(3);
+
+        data.put("title","_title");
+        data.put("email",email);
+        data.put("name","_name");
+
+        String emailContent = Freemarker.process(applicationEJB, data, "forgotPassword.ftl");
+
+        log.warn("Sending email to reset password: " + emailContent);
+
+        // reset email value in form
         email = "";
     }
 

@@ -23,7 +23,7 @@ public class ServletContextListenerImpl implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
 
         applicationEJB.setContextPath(servletContextEvent.getServletContext().getContextPath());
-
+        applicationEJB.configureFreeMarker(servletContextEvent.getServletContext());
     }
 
     @Override

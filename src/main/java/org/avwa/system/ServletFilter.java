@@ -3,7 +3,6 @@ package org.avwa.system;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Set;
 
 import org.avwa.system.authentication.oAuth.OAuth;
