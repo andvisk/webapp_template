@@ -11,13 +11,16 @@ import org.avwa.system.ApplicationEJB;
 import org.avwa.system.JsfUtilsEJB;
 import org.avwa.system.SessionEJB;
 import org.avwa.utils.AnnotationsUtils;
+import org.avwa.utils.MailUtils;
 import org.avwa.utils.Pbkdf2;
 import org.slf4j.Logger;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.mail.Session;
 
 @Named("loginController")
 @ViewScoped
@@ -31,6 +34,9 @@ public class LoginController extends BaseController<User> {
 
     @Inject
     JsfUtilsEJB jsfUtilsEJB;
+
+    @Resource(mappedName = "java:jboss/mail/MailSession")
+    private Session mailSession;
 
     @Inject
     ApplicationEJB applicationEJB;
@@ -78,11 +84,13 @@ public class LoginController extends BaseController<User> {
 
         Map<String, Object> data = new HashMap<>(3);
 
-        data.put("title","_title");
-        data.put("email",email);
-        data.put("name","_name");
+        data.put("title", "_title");
+        data.put("email", email);
+        data.put("name", "_name");
 
         String emailContent = Freemarker.process(applicationEJB, data, "forgotPassword.ftl");
+
+        MailUtils.sendEmail(mailSession, "neratokio@sages.lt", "subjext", emailContent);
 
         log.warn("Sending email to reset password: " + emailContent);
 

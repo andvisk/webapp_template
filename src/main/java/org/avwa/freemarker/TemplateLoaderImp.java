@@ -40,7 +40,6 @@ public class TemplateLoaderImp implements TemplateLoader {
 
     public long getLastModified(Object templateSource) {
         long lastMod = retrieveLastModifiedFromURL(getUrl((String) templateSource));
-        log.warn("last modified: " + lastMod);
         return lastMod;
     }
 
