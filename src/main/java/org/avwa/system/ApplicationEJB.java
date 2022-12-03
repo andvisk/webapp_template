@@ -6,7 +6,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 import org.avwa.entities.ApplicationProperties;
-import org.avwa.freemarker.Freemarker;
+import org.avwa.enums.AppPropNamesEnum;
 import org.avwa.freemarker.TemplateLoaderImp;
 import org.avwa.jpaUtils.EntitiesService;
 import org.slf4j.Logger;
@@ -75,6 +75,10 @@ public class ApplicationEJB {
 
     public boolean getPropertyAsBoolean(String name, String parameter) {
         return org.avwa.utils.StringUtils.getAsBoolean(getProperty(name, parameter));
+    }
+
+    public String getProperty(AppPropNamesEnum propEnum) {
+        return getProperty(propEnum.name(), "");
     }
 
     public String getProperty(String name) {

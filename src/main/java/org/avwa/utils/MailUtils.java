@@ -17,14 +17,14 @@ public class MailUtils {
 
     private static Logger log = LoggerFactory.getLogger(MailUtils.class);
 
-    public static boolean sendEmail(Session session, String toEmail, String subject, String body) {
+    public static boolean sendEmail(Session session, String toEmail, String subject, String body, String fromEmail) {
         MimeMessage msg = new MimeMessage(session);
 
         try {
 
-            msg.setFrom(new InternetAddress("no_reply@example.com", "NoReply-JD"));
+            msg.setFrom(new InternetAddress(fromEmail, fromEmail));
 
-            msg.setReplyTo(InternetAddress.parse("no_reply@example.com", false));
+            msg.setReplyTo(InternetAddress.parse(fromEmail, false));
 
             msg.setSubject(subject, "UTF-8");
 

@@ -1,5 +1,7 @@
 package org.avwa.system;
 
+import org.avwa.entities.ApplicationProperties;
+import org.avwa.enums.AppPropNamesEnum;
 import org.avwa.jpaUtils.EntitiesService;
 import org.slf4j.Logger;
 
@@ -23,15 +25,14 @@ public class StartupEJB {
 
         log.info("LOG ----------------");
 
-        /*ApplicationProperties appP = new ApplicationProperties();
-        appP.setName(AppPropNamesEnum.ALLOW_SOCIAL_LOGINS);
-        appP.setValue("true");
+/*        ApplicationProperties appP = new ApplicationProperties();
+        appP.setName(AppPropNamesEnum.DOMAIN_FULL_URL);
+        appP.setValue("https://sages.lt");
         entitiesService.merge(appP);
 
         appP = new ApplicationProperties();
-        appP.setName(AppPropNamesEnum.ALLOW_SOCIAL_LOGIN);
-        appP.setParameter(OAuthProviderType.FACEBOOK.name());
-        appP.setValue("true");
+        appP.setName(AppPropNamesEnum.SENDING_MAIL_FROM_ADDRESS);
+        appP.setValue("no-replay@sages.lt");
         entitiesService.merge(appP);
 
         appP = new ApplicationProperties();
