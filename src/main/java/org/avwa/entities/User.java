@@ -95,4 +95,5 @@ public class User extends EntityBase {
     public void setRole(UserRoleEnum role) {
         this.role = role;
     }
+
 }

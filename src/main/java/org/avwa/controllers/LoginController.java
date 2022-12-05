@@ -1,7 +1,7 @@
 package org.avwa.controllers;
 
-import java.applet.AppletStub;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,10 +22,13 @@ import org.slf4j.Logger;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.mail.Session;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 
 @Named("loginController")
 @ViewScoped
@@ -52,9 +55,13 @@ public class LoginController extends BaseController<User> {
 
     private String errorMsgKey = "error_msg";
 
+    private String token;
+
     @PostConstruct
     public void init() {
-
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
+                .getRequest();
+        token = request.getParameter("token");
     }
 
     public void authenticate() {
@@ -90,15 +97,23 @@ public class LoginController extends BaseController<User> {
         String randomString = StringUtils.getRandomString(70);
 
         ChangePasswdTokens tokenEnt = new ChangePasswdTokens();
-        tokenEnt.setDateTimeIssued(LocalDateTime.now());
+        LocalDateTime expiresTime = LocalDateTime.now().plusHours(1);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String validUntilStr = expiresTime.format(formatter);
+
+        tokenEnt.setValid_until_dateTime(expiresTime);
         tokenEnt.setToken(randomString);
         tokenEnt.setEmail(email);
+        tokenEnt.setActive(true);
 
         entService.merge(tokenEnt);
 
-        String url = applicationEJB.getProperty(AppPropNamesEnum.DOMAIN_FULL_URL) + applicationEJB.getContextPath() + "/forgotPassword?" + randomString;
+        String url = applicationEJB.getProperty(AppPropNamesEnum.DOMAIN_FULL_URL) + applicationEJB.getContextPath()
+                + "/forgotPassword?token=" + randomString;
         Map<String, Object> data = new HashMap<>(1);
         data.put("url", url);
+        data.put("validUntil", validUntilStr);
 
         String emailContent = Freemarker.process(applicationEJB, data, "forgotPassword.ftl");
 
@@ -109,15 +124,50 @@ public class LoginController extends BaseController<User> {
         email = "";
     }
 
-    public void changePassword(){
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void changePassword() {
 
-        String query = "SELECT e FROM " + AnnotationsUtils.getEntityName(User.class)
-                + " e, "+AnnotationsUtils.getEntityName(ChangePasswdTokens.class)+" t WHERE e.email = :email AND e.email = t.email AND t.token = :token AND e.type = " + UserTypeEnum.class.getCanonicalName() + ".LOCAL";
+        String query = "SELECT e FROM "
+                + AnnotationsUtils.getEntityName(User.class) + " e, "
+                + AnnotationsUtils.getEntityName(ChangePasswdTokens.class) + " t "
+                + "WHERE "
+                + "t.valid_until_dateTime >= :valid_until_dateTime "
+                + "AND t.active = true "
+                + "AND e.email = t.email "
+                + "AND t.token = :token "
+                + "AND e.type = " + UserTypeEnum.class.getCanonicalName() + ".LOCAL ";
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("email", email);
+        parameters.put("token", token);
+        parameters.put("valid_until_dateTime", LocalDateTime.now());
+
         User userFromDb = (User) entService.find(query, parameters);
-        asdf
+
+        if (userFromDb != null) {
+            // updating user password
+            byte[] salt = Pbkdf2.getSalt();
+            byte[] passw = Pbkdf2.getHash(passwordString, salt);
+            userFromDb.setPasswordHash(passw);
+            userFromDb.setSalt(salt);
+            entService.merge(userFromDb);
+
+            sessionEJB.setUser(userFromDb);
+
+            // mark as used token
+            query = "UPDATE " + AnnotationsUtils.getEntityName(ChangePasswdTokens.class) + " AS t "
+                    + "SET t.active = false "
+                    + "WHERE t.token = :token";
+
+            parameters = new HashMap<>();
+            parameters.put("token", token);
+
+            entService.executeUpdate(query, parameters);
+
+            jsfUtilsEJB.redirectTo("/");
+
+        } else {
+            sessionEJB.getMessages().put(errorMsgKey, "Nuoroda negalioja");
+        }
     }
 
     public String getMessage() {

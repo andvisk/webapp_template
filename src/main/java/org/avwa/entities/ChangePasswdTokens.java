@@ -2,6 +2,7 @@ package org.avwa.entities;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -10,10 +11,13 @@ import jakarta.persistence.Table;
 public class ChangePasswdTokens extends EntityBase {
 
     public String email;
-    
+
     public String token;
 
-    private LocalDateTime dateTimeIssued;
+    private LocalDateTime valid_until_dateTime;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean active;
 
     public String getEmail() {
         return email;
@@ -31,12 +35,20 @@ public class ChangePasswdTokens extends EntityBase {
         this.token = token;
     }
 
-    public LocalDateTime getDateTimeIssued() {
-        return dateTimeIssued;
+    public LocalDateTime getValid_until_dateTime() {
+        return valid_until_dateTime;
     }
 
-    public void setDateTimeIssued(LocalDateTime dateTimeIssued) {
-        this.dateTimeIssued = dateTimeIssued;
+    public void setValid_until_dateTime(LocalDateTime valid_until_dateTime) {
+        this.valid_until_dateTime = valid_until_dateTime;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
 }

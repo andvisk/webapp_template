@@ -166,7 +166,7 @@
                             id="send-email-button"
                             value="Siųsti el.paštu"
                             actionListener="#{loginController.userForgotPassword}"
-                            oncomplete="if(args &amp;&amp; !args.validationFailed) { PF('dlgUser').hide(); }"
+                            oncomplete="if(args &amp;&amp; !args.validationFailed) { PF('dlgForgotPassword').hide(); PF('dlgInformUser').show() }"
                             partialSubmit="true"
                             process="dlgForgotPassword"
                             ajax="true"
@@ -176,6 +176,14 @@
                     </div>
                 </div>
             </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgInformUser" header="#{usersController.actionName}" modal="true" height="100" width="450">
+            <div class="form_div">
+                <div class="div_form_grid_two_col">
+                    <h:outputLabel class="label_wa">Nuoroda su slaptažodžio keitimu išsiųsta el.paštu</h:outputLabel>
+                </div>
+            </div>
         </p:dialog>
 
     </h:body>

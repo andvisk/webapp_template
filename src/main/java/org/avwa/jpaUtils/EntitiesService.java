@@ -1,5 +1,6 @@
 package org.avwa.jpaUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,19 @@ public class EntitiesService {
                 .getResultList();
         retList.stream().forEach(p -> detach(p));
         return retList;
+    }
+
+    public <T> void deleteById(Class<T> clazz, long id) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("id", id);
+        String jpqlQuery = "delete from " + AnnotationsUtils.getEntityName(clazz) + " a where a.id = :id";
+        executeUpdate(jpqlQuery, parameters);
+    }
+
+    public <T> void executeUpdate(String jpqlQuery, Map<String, Object> parameters){
+        Query query = em.createQuery(jpqlQuery);
+        query = setParameters(query, parameters);
+        query.executeUpdate();
     }
 
     public <T> T refresh(T obj) {
