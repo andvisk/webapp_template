@@ -18,6 +18,12 @@ public class PathUtils {
         return string;
     }
 
+    public static String removeLeadingAndTrailingSlashes(String string) {
+        string = removeLeadingSlash(string);
+        string = removeTrailingSlash(string);
+        return string;
+    }
+
     // parameter set = dirs from servletContext, page = page to check
     public static boolean containsPage(Set<String> set, String page) {
         for (String uri : set) {
@@ -44,17 +50,15 @@ public class PathUtils {
 
     public static boolean accessingPath(List<String> targetPathLvls, String checkPath) {
         List<String> pathLvls = getPathLevels(checkPath);
-        if (targetPathLvls.size() <= pathLvls.size()) {
-            boolean same = true;
-            for (int i = 0; i < targetPathLvls.size(); i++) {
-                if (!targetPathLvls.get(i).equals(pathLvls.get(i))) {
-                    same = false;
-                    break;
-                }
+        boolean same = true;
+        for (int i = 0; i < targetPathLvls.size() && i < pathLvls.size(); i++) {
+            if (!targetPathLvls.get(i).equals(pathLvls.get(i))) {
+                same = false;
+                break;
             }
-            if (same)
-                return true;
         }
+        if (same)
+            return true;
         return false;
     }
 

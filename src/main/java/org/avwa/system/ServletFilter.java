@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.avwa.system.authentication.oAuth.OAuth;
 import org.avwa.system.authentication.oAuth.OAuthProviderType;
+import org.avwa.system.authorization.Authorization;
 import org.avwa.utils.PathUtils;
 import org.slf4j.Logger;
 
@@ -40,6 +41,9 @@ public class ServletFilter implements Filter {
     @Inject
     OAuth oAuth;
 
+    @Inject
+    Authorization authorization;
+
     FilterConfig filterConfig;
 
     private final String xhtmlExtension = ".xhtml";
@@ -70,10 +74,14 @@ public class ServletFilter implements Filter {
         String rootUri = requestPath.substring(0, indexOfSecondSlash);
         String uri = requestPath.substring(indexOfSecondSlash);
 
-        if (!requestPath.equals(rootUri + "/" + socialAuthUri)) {// skip OAuth requests on return url
+        String requestedDirectoryWithoutRoot = "";
+
+        if (!PathUtils.accessingOneOfThePaths(uri, authorization.getRestfulEndPooints())) {// skip restful requests
 
             if (requestPath.endsWith("/")) {
+
                 // requested directory
+
                 Set<String> paths = servletContext.getResourcePaths(uri);
 
                 if (PathUtils.containsPage(paths, defaultDirectoryPage))
@@ -81,7 +89,12 @@ public class ServletFilter implements Filter {
                 else
                     requestPath = rootUri + "/" + pageNotFoundUri;
 
+                requestedDirectoryWithoutRoot = uri;
+
             } else {
+
+                //requested file
+
                 if (!requestPath.contains(ResourceHandler.RESOURCE_IDENTIFIER)) { // if request is not for resource
                     int lastSlashIndex = uri.lastIndexOf("/");
                     String path = uri.substring(0, lastSlashIndex + 1);
@@ -91,20 +104,21 @@ public class ServletFilter implements Filter {
                         fileName += xhtmlExtension;
                     }
                     Set<String> paths = servletContext.getResourcePaths(path);
-                    if (!PathUtils.containsPage(paths, fileName))
+                    if (!PathUtils.containsPage(paths, fileName)){
                         // no page for request
                         requestPath = rootUri + "/" + pageNotFoundUri;
-                    else
+                        requestedDirectoryWithoutRoot = "/";
+                    }else{
                         // final request path
                         requestPath = rootUri + path + fileName;
+                        requestedDirectoryWithoutRoot = path;
+                    }
 
                     // OAuth2.0
                     String login = req.getParameter("login"); // value = oauth provider type
                     String requestPathWithoutRoot = requestPath.substring(indexOfSecondSlash);
                     if (login != null && requestPathWithoutRoot.equalsIgnoreCase("/login.xhtml")) {
-
                         log.debug("OAuth login with " + login);
-
                         OAuthProviderType providerType = OAuthProviderType.valueOf(login.toUpperCase());
                         if (providerType != null) {
                             oAuth.getCode(httpResponse, providerType);
@@ -113,6 +127,13 @@ public class ServletFilter implements Filter {
                     }
                 }
             }
+        }else{
+            log.debug("servlet filter skipped restful end point:"+requestPath);
+        }
+
+        //check authorization for directory
+if(authorization.){
+
         }
 
         if (!requestPath.equalsIgnoreCase(reguestPathInitial)) {

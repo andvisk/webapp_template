@@ -82,7 +82,7 @@ sourceSets {
 
 test {
 
-    classpath = project.sourceSets.test.runtimeClasspath + files("${projectDir}/test")
+    classpath = project.sourceSets.test.runtimeClasspath + files("${projectDir}/src/test")
 
     filter {
       includeTestsMatching "PathUtilsTest.accessingOneOfThePaths"
