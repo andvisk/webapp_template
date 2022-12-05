@@ -72,4 +72,22 @@ task deploy(type: Exec) {
     commandLine 'touch', archiveName_ + '.dodeploy'
 }
 
+sourceSets {
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+    }
+}
+
+test {
+
+    classpath = project.sourceSets.test.runtimeClasspath + files("${projectDir}/test")
+
+    filter {
+      includeTestsMatching "PathUtilsTest.accessingOneOfThePaths"
+    } 
+
+    useJUnitPlatform()
+}
 
