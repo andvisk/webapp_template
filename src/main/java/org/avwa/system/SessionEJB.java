@@ -42,13 +42,13 @@ public class SessionEJB {
     }
 
     public String getUserName() {
-        if (StringUtils.isNoneBlank(user.getName()))
-            return user.getName();
-        else if (StringUtils.isNoneBlank(user.getEmail())) {
-            return user.getEmail();
-        } else {
-            return "user_not_logged_in";
-        }
+        if (user != null)
+            if (StringUtils.isNoneBlank(user.getName()))
+                return user.getName();
+            else if (StringUtils.isNoneBlank(user.getEmail())) {
+                return user.getEmail();
+            }
+        return "user_not_logged_in";
     }
 
     public String getoAuthState() {

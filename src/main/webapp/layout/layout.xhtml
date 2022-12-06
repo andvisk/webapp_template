@@ -18,7 +18,6 @@
         <link href="#{applicationEJB.contextPath}/public/assets/css/fontawesome.css" rel="stylesheet" />
         <link href="#{applicationEJB.contextPath}/public/assets/css/brands.css" rel="stylesheet" />
         <link href="#{applicationEJB.contextPath}/public/assets/css/solid.css" rel="stylesheet" />
-        <script type="text/javascript" src="#{applicationEJB.contextPath}/public/assets/js/jquery-3.6.1.min.js"></script>
 
         <title>
             <ui:insert name="title">Title</ui:insert>
@@ -30,10 +29,17 @@
         <div id="accountPopUp">
             <div id="accountPopUpDiv" style="z-index: 1002; display: none;">
                 <div id="pupupDivWrapper"
-                    class="ui-overlaypanel ui-widget ui-widget-content ui-corner-all ui-shadow">
+                    class="ui-widget ui-corner-all ui-shadow">
                     <div id="popupDivContent" class="ui-overlaypanel-content">
-                        <div id="popupListWrapper" style="min-width:190px; min-height:90px; overflow-y: auto">
-
+                        <div id="popupListWrapper" style="min-width:140px; min-height:90px; overflow-y: auto">
+                            <ul style="margin:0; list-style: none; padding:0;">
+                                <li>
+                                    <a href="" class="navigation_link">Profilis</a>
+                                </li>
+                                <li>
+                                    <a href="#{applicationEJB.contextPath}/login" class="navigation_link">Atsijungti</a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -102,16 +108,16 @@
             <script type="text/javascript">
 
                 window.onload = function () {
-                    var popup = $("#accountPopUp");
+                    var popup = document.getElementById('accountPopUp');
 
                     var rect = document.getElementById('div_login_name').getBoundingClientRect();
                     const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
 
-                    popup[0].style.position = "fixed";
-                    popup[0].style.fixed= "0";
-                    popup[0].style.right= vw - rect.right;
-                    popup[0].style.top = rect.bottom;
-                    popup[0].style.zIndex= "1001";
+                    popup.style.position = "fixed";
+                    popup.style.fixed= "0";
+                    popup.style.right= vw - rect.right;
+                    popup.style.top = rect.bottom;
+                    popup.style.zIndex= "1001";
 
                 }
 
@@ -131,14 +137,9 @@
                 });
 
                 function checkIsWithinRect(rect, event){
-                    console.log(rect);
-                    console.log(event.clientX + " " + event.clientY);
-
                     if(event.clientX &gt;= rect.left &amp;&amp; event.clientX &lt;= rect.right &amp;&amp; event.clientY &gt;= rect.top &amp;&amp; event.clientY &lt;= rect.bottom){
-                        console.log(true);
                         return true;
                     }else{
-                        console.log(false);
                         return false;
                     }
                 }
