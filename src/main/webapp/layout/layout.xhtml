@@ -13,18 +13,34 @@
 >
     <h:head>
         <meta charset="UTF-8" />
-        <link rel="icon" href="#{applicationEJB.contextPath}/public/img/java.png" />
-        <link rel="stylesheet" href="#{applicationEJB.contextPath}/public/css/style.css" />
+        <link rel="icon" href="#{applicationEJB.contextPath}/public/assets/img/java.png" />
+        <link rel="stylesheet" href="#{applicationEJB.contextPath}/public/assets/css/style.css" />
         <link href="#{applicationEJB.contextPath}/public/assets/css/fontawesome.css" rel="stylesheet" />
         <link href="#{applicationEJB.contextPath}/public/assets/css/brands.css" rel="stylesheet" />
         <link href="#{applicationEJB.contextPath}/public/assets/css/solid.css" rel="stylesheet" />
+        <script type="text/javascript" src="#{applicationEJB.contextPath}/public/assets/js/jquery-3.6.1.min.js"></script>
+
         <title>
-
             <ui:insert name="title">Title</ui:insert>
-
         </title>
+
     </h:head>
     <h:body>
+
+        <div id="accountPopUp">
+            <div id="accountPopUpDiv" style="z-index: 1002; display: none;">
+                <div id="pupupDivWrapper"
+                    class="ui-overlaypanel ui-widget ui-widget-content ui-corner-all ui-shadow">
+                    <div id="popupDivContent" class="ui-overlaypanel-content">
+                        <div id="popupListWrapper" style="min-width:190px; min-height:90px; overflow-y: auto">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div id="div_root">
             <div id="div_page_header">
                 <div id="div_login_name">
@@ -38,8 +54,22 @@
                     <nav id="nav_navigation">
                         <div id="div_side_bar">
 
+                            <h:panelGroup rendered="#{authz.hasRoleAdmin()}">
+                                <div>
+                                    <p class="navigation_category">Administravimas</p>
+                                    <ol id="ol_side_bar">
+                                        <li>
+                                            <a href="#{applicationEJB.contextPath}/admin/users" class="navigation_link">Vartotojai</a>
+                                        </li>
+                                        <li>
+                                            <p class="navigation_link">navigation link 2</p>
+                                        </li>
+                                    </ol>
+                                </div>
+                            </h:panelGroup>
+
                             <div>
-                                <p class="navigation_category">Administravimas</p>
+                                <p class="navigation_category">Viešas turinys</p>
                                 <ol id="ol_side_bar">
                                     <li>
                                         <a href="#{applicationEJB.contextPath}/admin/users" class="navigation_link">Vartotojai</a>
@@ -67,5 +97,54 @@
                 </div>
             </footer>
         </div>
+
+        <h:panelGroup id="scriptas">
+            <script type="text/javascript">
+
+                window.onload = function () {
+                    var popup = $("#accountPopUp");
+
+                    var rect = document.getElementById('div_login_name').getBoundingClientRect();
+                    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+
+                    popup[0].style.position = "fixed";
+                    popup[0].style.fixed= "0";
+                    popup[0].style.right= vw - rect.right;
+                    popup[0].style.top = rect.bottom;
+                    popup[0].style.zIndex= "1001";
+
+                }
+
+                document.addEventListener('click', (event) => {
+                    var popup = document.getElementById('accountPopUpDiv');
+                    var rect = document.getElementById('accountPopUpDiv').getBoundingClientRect();
+                    var rectLoginName = document.getElementById('div_login_name').getBoundingClientRect();
+                    var target = event.target;
+
+                    if(popup.style.display === 'none' &amp;&amp; checkIsWithinRect(rectLoginName,event)){
+                        popup.style.display = 'block';
+                    }else{
+                        if(!checkIsWithinRect(rect, event)){
+                            popup.style.display = 'none'
+                        }
+                    }
+                });
+
+                function checkIsWithinRect(rect, event){
+                    console.log(rect);
+                    console.log(event.clientX + " " + event.clientY);
+
+                    if(event.clientX &gt;= rect.left &amp;&amp; event.clientX &lt;= rect.right &amp;&amp; event.clientY &gt;= rect.top &amp;&amp; event.clientY &lt;= rect.bottom){
+                        console.log(true);
+                        return true;
+                    }else{
+                        console.log(false);
+                        return false;
+                    }
+                }
+
+            </script>
+        </h:panelGroup>
+
     </h:body>
 </html>

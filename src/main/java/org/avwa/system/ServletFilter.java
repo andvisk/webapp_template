@@ -44,12 +44,19 @@ public class ServletFilter implements Filter {
     @Inject
     Authorization authorization;
 
+    @Inject
+    JsfUtilsEJB jsfUtilsEJB;
+
+    @Inject
+    ApplicationEJB applicationEJB;
+
     FilterConfig filterConfig;
 
     private final String xhtmlExtension = ".xhtml";
     private final String defaultDirectoryPage = "index.xhtml";
     private final String pageNotFoundUri = "pageNotFound.xhtml";
-    private final String socialAuthUri = "socialauth";
+    private final String unauthorizedPage = "unauthorized.xhtml";
+    private final String resourcePath = "/public/assets";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -76,6 +83,8 @@ public class ServletFilter implements Filter {
 
         String requestedDirectoryWithoutRoot = "";
 
+        boolean requestedResource = false;
+
         if (!PathUtils.accessingOneOfThePaths(uri, authorization.getRestfulEndPooints())) {// skip restful requests
 
             if (requestPath.endsWith("/")) {
@@ -93,9 +102,9 @@ public class ServletFilter implements Filter {
 
             } else {
 
-                //requested file
+                // requested file
 
-                if (!requestPath.contains(ResourceHandler.RESOURCE_IDENTIFIER)) { // if request is not for resource
+                if (!isResourceReq(requestPath)) { // if request is not for resource
                     int lastSlashIndex = uri.lastIndexOf("/");
                     String path = uri.substring(0, lastSlashIndex + 1);
 
@@ -104,11 +113,11 @@ public class ServletFilter implements Filter {
                         fileName += xhtmlExtension;
                     }
                     Set<String> paths = servletContext.getResourcePaths(path);
-                    if (!PathUtils.containsPage(paths, fileName)){
+                    if (!PathUtils.containsPage(paths, fileName)) {
                         // no page for request
                         requestPath = rootUri + "/" + pageNotFoundUri;
                         requestedDirectoryWithoutRoot = "/";
-                    }else{
+                    } else {
                         // final request path
                         requestPath = rootUri + path + fileName;
                         requestedDirectoryWithoutRoot = path;
@@ -125,15 +134,21 @@ public class ServletFilter implements Filter {
                             return;
                         }
                     }
+                } else {
+                    requestedResource = true;
                 }
             }
-        }else{
-            log.debug("servlet filter skipped restful end point:"+requestPath);
+        } else {
+            log.debug("servlet filter skipped restful end point:" + requestPath);
         }
 
-        //check authorization for directory
-if(authorization.){
-
+        // check authorization for directory
+        if (!requestedResource) {
+            if (!authorization.hasPermissionOnDir(requestedDirectoryWithoutRoot)) {
+                log.debug("unauthorized directory:" + requestedDirectoryWithoutRoot);
+                jsfUtilsEJB.forwardWithDispatcher(httpRequest, httpResponse, "/" + unauthorizedPage);
+                return;
+            }
         }
 
         if (!requestPath.equalsIgnoreCase(reguestPathInitial)) {
@@ -142,9 +157,10 @@ if(authorization.){
             // - all other requests have indexOfSecondFlash
             if (indexOfSecondSlash > 0) {
                 requestPath = requestPath.substring(indexOfSecondSlash);
-                log.debug("dispatch forward to:"+requestPath);
+                log.debug("dispatch forward to:" + requestPath);
                 RequestDispatcher dispatcher = httpRequest.getRequestDispatcher(requestPath);
                 try {
+                    setHeadersForNotCaching(resp);
                     dispatcher.forward(httpRequest, httpResponse);
                     return;
                 } catch (ServletException e) {
@@ -154,12 +170,33 @@ if(authorization.){
         }
 
         // set headers for resources caching
-        if (requestPath.contains(ResourceHandler.RESOURCE_IDENTIFIER)) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MONTH, 1);
-            ((HttpServletResponse) resp).setHeader("Expires", String.valueOf(calendar.getTimeInMillis()));
+        if (requestedResource) {
+            setHeadersForResources(resp);
+        } else {
+            setHeadersForNotCaching(resp);
         }
         chain.doFilter(req, resp);// sends request to next resource
+    }
+
+    private boolean isResourceReq(String uri) {
+        if (uri.contains(ResourceHandler.RESOURCE_IDENTIFIER) ||
+                uri.startsWith(applicationEJB.getContextPath() + resourcePath)) {
+            return true;
+        }
+        return false;
+    }
+
+    private void setHeadersForResources(ServletResponse resp) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, 1);
+        ((HttpServletResponse) resp).setHeader("Expires", String.valueOf(calendar.getTimeInMillis()));
+    }
+
+    private void setHeadersForNotCaching(ServletResponse resp) {
+        HttpServletResponse response = (HttpServletResponse) resp;
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+        response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+        response.setDateHeader("Expires", 0); // Proxies.
     }
 
     public void destroy() {

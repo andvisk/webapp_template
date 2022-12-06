@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.avwa.entities.User;
+import org.avwa.enums.UserRoleEnum;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateful;
@@ -24,7 +25,12 @@ public class SessionEJB {
 
     @PostConstruct
     public void init() {
-        user = null;
+        setPublicUser();
+    }
+
+    public void setPublicUser() {
+        user = new User();
+        user.setRole(UserRoleEnum.PUBLIC);
     }
 
     public User getUser() {
@@ -36,14 +42,13 @@ public class SessionEJB {
     }
 
     public String getUserName() {
-        if (user != null) {
-            if (StringUtils.isNoneBlank(user.getName()))
-                return user.getName();
-            else {
-                return user.getEmail();
-            }
+        if (StringUtils.isNoneBlank(user.getName()))
+            return user.getName();
+        else if (StringUtils.isNoneBlank(user.getEmail())) {
+            return user.getEmail();
+        } else {
+            return "user_not_logged_in";
         }
-        return "user_not_logged_in";
     }
 
     public String getoAuthState() {

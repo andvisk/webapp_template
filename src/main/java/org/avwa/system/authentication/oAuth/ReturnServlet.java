@@ -85,7 +85,7 @@ public class ReturnServlet extends HttpServlet {
                 if (userFromDb == null) { // create new user if permitted user registration
                     if (applicationEJB.getPropertyAsBoolean(AppPropNamesEnum.ALLOW_REGISTERING_USERS.name())) {
                         userFromDb = new User();
-                        userFromDb.setRole(UserRoleEnum.PUBLIC);
+                        userFromDb.setRole(UserRoleEnum.PUBLIC_REGISTERED_USER);
                         if (StringUtils.isNoneBlank(social_name))
                             userFromDb.setName(social_name);
                         if (StringUtils.isNoneBlank(social_email))

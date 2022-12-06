@@ -119,7 +119,7 @@ public class UsersController extends BaseController<User> {
     public void userRegistration() {
 
         object.setType(UserTypeEnum.LOCAL);
-        object.setRole(UserRoleEnum.PUBLIC);
+        object.setRole(UserRoleEnum.PUBLIC_REGISTERED_USER);
 
         byte[] salt = Pbkdf2.getSalt();
         byte[] passw = Pbkdf2.getHash(passwordString, salt);

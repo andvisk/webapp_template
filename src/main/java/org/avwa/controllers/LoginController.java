@@ -170,6 +170,10 @@ public class LoginController extends BaseController<User> {
         }
     }
 
+    public void logout() {
+        sessionEJB.setPublicUser();
+    }
+
     public String getMessage() {
         // use just one time, and clear
         String msg = sessionEJB.getMessages().get(errorMsgKey);

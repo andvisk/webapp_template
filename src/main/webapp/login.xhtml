@@ -12,9 +12,13 @@
     xmlns:p="http://primefaces.org/ui"
 >
     <h:head>
+        <f:metadata>
+            <f:viewAction action="#{loginController.logout()}" />
+        </f:metadata>
+
         <meta charset="UTF-8" />
-        <link rel="icon" href="#{applicationEJB.contextPath}/public/img/java.png" />
-        <link rel="stylesheet" href="#{applicationEJB.contextPath}/public/css/style.css" />
+        <link rel="icon" href="#{applicationEJB.contextPath}/public/assets/img/java.png" />
+        <link rel="stylesheet" href="#{applicationEJB.contextPath}/public/assets/css/style.css" />
         <link href="#{applicationEJB.contextPath}/public/assets/css/fontawesome.css" rel="stylesheet" />
         <link href="#{applicationEJB.contextPath}/public/assets/css/brands.css" rel="stylesheet" />
         <link href="#{applicationEJB.contextPath}/public/assets/css/solid.css" rel="stylesheet" />

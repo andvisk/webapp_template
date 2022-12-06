@@ -4,6 +4,7 @@ public enum UserRoleEnum {
 
     ADMIN("Administratorius"), 
     REGULAR("Paprastas"),
+    PUBLIC_REGISTERED_USER("Viešas, registruotas vartotojas"),
     PUBLIC("Viešas");
 
     private final String label;

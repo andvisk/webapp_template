@@ -11,12 +11,12 @@ import org.avwa.system.SessionEJB;
 import org.avwa.utils.PathUtils;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.ejb.Stateless;
+import jakarta.ejb.Stateful;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 @Named("authz")
-@Stateless
+@Stateful
 public class Authorization {
 
     @Inject
@@ -33,10 +33,18 @@ public class Authorization {
         directoriesPerm = new HashMap<>(10);
 
         addDirPermission("admin", UserRoleEnum.ADMIN);
+        addDirPermission("", Arrays.asList(UserRoleEnum.values()));
+        addDirPermission("public", Arrays.asList(UserRoleEnum.values()));
     }
 
     public List<String> getRestfulEndPooints() {
         return restfulEndPooints;
+    }
+
+    private void addDirPermission(String dir, List<UserRoleEnum> roles) {
+        for (UserRoleEnum role : roles) {
+            addDirPermission(dir, role);
+        }
     }
 
     private void addDirPermission(String dir, UserRoleEnum role) {
@@ -47,6 +55,8 @@ public class Authorization {
             roles = new ArrayList<UserRoleEnum>();
 
         roles.add(role);
+
+        directoriesPerm.put(dir, roles);
     }
 
     public boolean hasRoleAdmin() {
@@ -57,13 +67,20 @@ public class Authorization {
         return sessionEJB.getUser().getRole().equals(UserRoleEnum.REGULAR);
     }
 
-    public boolean hasPermissionOnDir(String dir){
+    public boolean hasRole(List<UserRoleEnum> roles) {
+        if (sessionEJB.getUser() != null && roles.contains(sessionEJB.getUser().getRole())) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean hasPermissionOnDir(String dir) {
         dir = PathUtils.removeLeadingAndTrailingSlashes(dir);
 
         List<UserRoleEnum> roles = directoriesPerm.get(dir);
 
-        if (roles != null && ddd roles.contains(sessionEJB.getUser().getRole()){
-            
+        if (roles != null && sessionEJB.getUser() != null && roles.contains(sessionEJB.getUser().getRole())) {
+            return true;
         }
 
         return false;
