@@ -91,4 +91,8 @@ public class SystemPropertiesController extends BaseController<User> {
         this.prop = prop;
     }
 
+    public boolean getAsBoolean(String value) {
+        return org.avwa.utils.StringUtils.getAsBoolean(value);
+    }
+
 }

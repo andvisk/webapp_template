@@ -31,39 +31,32 @@
                         <h:selectBooleanCheckbox id="allowUserRegistration" value="#{systemPropertiesController.prop['ALLOW_REGISTERING_USERS']}" class="checkbox" />
 
                         <h:outputLabel for="allowSocialLogins" class="label_wa">Leisti prisijungti naudojantis soc.tinklus</h:outputLabel>
-                        <h:selectBooleanCheckbox id="allowSocialLogins" value="#{systemPropertiesController.prop['ALLOW_SOCIAL_LOGINS']}" class="checkbox" />
+                        <h:selectBooleanCheckbox id="allowSocialLogins" value="#{systemPropertiesController.prop['ALLOW_SOCIAL_LOGINS']}" class="checkbox"
+                        >
+                            <f:ajax execute="allowGoogleLogins allowFacebookLogins" render = "allowGoogleLogins allowFacebookLogins"/>
+                        </h:selectBooleanCheckbox>
 
                         <h:outputLabel for="allowGoogleLogins" class="label_wa">Leisti prisijungti naudojantis Goole</h:outputLabel>
-                        <h:selectBooleanCheckbox id="allowGoogleLogins" value="#{systemPropertiesController.prop['ALLOW_SOCIAL_LOGIN___GOOGLE']}" class="checkbox" />
+                        <h:selectBooleanCheckbox id="allowGoogleLogins" value="#{systemPropertiesController.prop['ALLOW_SOCIAL_LOGIN___GOOGLE']}" class="checkbox"
+                            disabled="#{!systemPropertiesController.getAsBoolean(systemPropertiesController.prop['ALLOW_SOCIAL_LOGINS'])}"
+                        />
 
                         <h:outputLabel for="allowFacebookLogins" class="label_wa">Leisti prisijungti naudojantis Facebook</h:outputLabel>
-                        <h:selectBooleanCheckbox id="allowFacebookLogins" value="#{systemPropertiesController.prop['ALLOW_SOCIAL_LOGIN___FACEBOOK']}" class="checkbox" />
-
-                        <script type="text/javascript">
-
-                            window.attachEvent('load', initCheckBoxes);
-
-                            function initCheckBoxes () {
-                                var socialCommon = document.getElementById('allowSocialLogins');
-                                console.log(socialCommon.checked);
-                                enableDisableSocial(socialCommon.checked);
-                            }
-
-                            function enableDisableSocial(bool){
-                                const checkBoxes = ['allowGoogleLogins', 'allowFacebookLogins'];
-
-                                checkBoxes.forEach((value, index, array)=>{
-                                    var socialX = document.getElementById(value);
-                                    socialX.setAttribute('disabled', bool); 
-                                });
-                            }
-
-                        </script>
+                        <h:selectBooleanCheckbox id="allowFacebookLogins" value="#{systemPropertiesController.prop['ALLOW_SOCIAL_LOGIN___FACEBOOK']}" class="checkbox"
+                            disabled="#{!systemPropertiesController.getAsBoolean(systemPropertiesController.prop['ALLOW_SOCIAL_LOGINS'])}"
+                        />
 
                     </div>
                 </div>
 
-                <h:commandButton id="save-button" value="Išsaugoti" action="#{systemPropertiesController.saveProperties}" class="button_wa" />
+                <p:commandButton
+                    id="save-button"
+                    value="Išsaugoti"
+                    actionListener="#{systemPropertiesController.saveProperties}"
+                    process="content_form"
+                    ajax="true"
+                    update="content_form"
+                    stylClass="button_wa" />
 
             </h:form>
 
