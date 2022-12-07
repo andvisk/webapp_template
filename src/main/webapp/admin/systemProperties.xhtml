@@ -22,10 +22,10 @@
                 <div class="form_div">
                     <div class="div_form_grid_two_col">
                         <h:outputLabel for="domain" class="label_wa">Domeinas</h:outputLabel>
-                        <h:inputText id="domain" value="#{systemPropertiesController.prop['DOMAIN_FULL_URL']}" class="input_wa" />
+                        <p:inputText id="domain" value="#{systemPropertiesController.prop['DOMAIN_FULL_URL']}" class="input_wa" />
 
                         <h:outputLabel for="email" class="label_wa">El.paštas, iš kurio siunčiami laiškai</h:outputLabel>
-                        <h:inputText id="email" value="#{systemPropertiesController.prop['SENDING_MAIL_FROM_ADDRESS']}" class="input_wa" />
+                        <p:inputText id="email" value="#{systemPropertiesController.prop['SENDING_MAIL_FROM_ADDRESS']}" class="input_wa" />
 
                         <h:outputLabel for="allowUserRegistration" class="label_wa">Leisti vartotojams registruotis</h:outputLabel>
                         <h:selectBooleanCheckbox id="allowUserRegistration" value="#{systemPropertiesController.prop['ALLOW_REGISTERING_USERS']}" class="checkbox" />

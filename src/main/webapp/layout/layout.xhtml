@@ -35,7 +35,7 @@
                             <ul style="margin:0; list-style: none; padding:0;">
                                 <h:panelGroup rendered="#{authz.hasNoRole(['public'])}">
                                     <li>
-                                        <a href="/userProfile" class="navigation_link">Profilis</a>
+                                        <a href="#{applicationEJB.contextPath}/userProfile" class="navigation_link">Profilis</a>
                                     </li>
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{authz.hasNoRole(['public'])}">

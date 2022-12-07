@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.avwa.entities.OAuthProperties;
 import org.avwa.entities.User;
 import org.avwa.enums.OAuthPropertiesNamesEnum;
@@ -25,7 +24,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Named("oauthPropertiesController")
 @ViewScoped
-public class OAuthPropController extends BaseController<User> {
+public class OAuthPropController extends BaseController<OAuthProperties> {
 
     @Inject
     Logger log;
@@ -114,4 +113,7 @@ public class OAuthPropController extends BaseController<User> {
         this.prop = prop;
     }
 
+    public OAuthProperties getObject(){
+        return null;
+    }
 }

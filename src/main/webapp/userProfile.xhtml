@@ -12,26 +12,48 @@
     xmlns:p="http://primefaces.org/ui"
 >
 
-    <ui:composition template="../layout/layout.xhtml">
+    <ui:composition template="layout/layout.xhtml">
 
-        <ui:define name="title">Google prieiga</ui:define>
+        <ui:define name="title">Vartotojo profilis</ui:define>
 
         <ui:define name="main_content">
             <h:form id="content_form">
 
                 <div class="form_div">
                     <div class="div_form_grid_two_col">
-                        <h:outputLabel for="client_id" class="label_wa">Client ID</h:outputLabel>
-                        <h:inputText id="client_id" value="#{oauthPropertiesController.prop['CLIENT_ID']}" class="input_wa" style="width:500px"/>
+                        <h:outputLabel class="label_wa">Vardas</h:outputLabel>
+                        <p:inputText id="insert_name" value="#{userProfileController.object.name}"
+                            validatorMessage="Min 2 simboliai" class="input_wa">
+                            <f:validateLength minimum="2" />
+                        </p:inputText>
+                        <br />
+                        <h:message for="insert_name" id="insert_name_msg" class="jsf_error_msg" />
 
-                        <h:outputLabel for="client_secret" class="label_wa">Client secret</h:outputLabel>
-                        <h:inputText id="client_secret" value="#{oauthPropertiesController.prop['CLIENT_SECRET']}" class="input_wa" style="width:500px"/>
+                        <h:outputLabel for="insert_email" class="label_wa">El. paštas</h:outputLabel>
+                        <p:inputText id="insert_email" value="#{userProfileController.object.email}" class="input_wa"
+                            validator="#{jsfValidatorsUser.email_userProfileController}"
+                        />
+                        <br />
+                        <h:message for="insert_email" id="insert_email_msg" class="jsf_error_msg" />
 
-                        <h:outputLabel for="redirect_uri" class="label_wa">Redirect URI</h:outputLabel>
-                        <h:inputText id="redirect_uri" value="#{oauthPropertiesController.prop['REDIRECT_URI']}" class="input_wa" style="width:500px"/>
+                        <h:outputLabel for="insert_password" class="label_wa" >Slaptažodis</h:outputLabel>
+                        <p:password id="insert_password" value="#{userProfileController.passwordString}"
+                            toggleMask="true"
+                            redisplay="true"
+                            validator="#{jsfValidatorsUser.password}"
+                            class="input_wa" />
+                        <h:outputText  escape="false" value="&#160;" />
+                        <h:message for="insert_password" id="insert_password_msg" class="jsf_error_msg" />
 
-                        <h:outputLabel for="access_info_uri" class="label_wa">Access info URI</h:outputLabel>
-                        <h:inputText id="access_info_uri" value="#{oauthPropertiesController.prop['ACCESS_INFO_URI']}" class="input_wa" style="width:500px"/>
+                        <p:commandButton
+                            id="insert-button"
+                            value="Keisti"
+                            actionListener="#{userProfileController.saveObject}"
+                            partialSubmit="true"
+                            process="content_form"
+                            ajax="true"
+                            update="content_form"
+                            styleClass="button_wa" />
 
                     </div>
                 </div>

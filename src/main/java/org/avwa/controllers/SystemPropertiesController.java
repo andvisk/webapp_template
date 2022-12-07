@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.avwa.entities.ApplicationProperties;
-import org.avwa.entities.User;
 import org.avwa.enums.AppPropNamesEnum;
 import org.avwa.system.ApplicationEJB;
 import org.avwa.utils.AnnotationsUtils;
@@ -21,7 +20,7 @@ import jakarta.inject.Named;
 
 @Named("systemPropertiesController")
 @ViewScoped
-public class SystemPropertiesController extends BaseController<User> {
+public class SystemPropertiesController extends BaseController<ApplicationProperties> {
 
     @Inject
     Logger log;
@@ -93,6 +92,10 @@ public class SystemPropertiesController extends BaseController<User> {
 
     public boolean getAsBoolean(String value) {
         return org.avwa.utils.StringUtils.getAsBoolean(value);
+    }
+
+    public ApplicationProperties getObject(){
+        return null;
     }
 
 }

@@ -100,7 +100,7 @@
 
                             <h:outputLabel for="insert_email" class="label_wa">El. paštas</h:outputLabel>
                             <p:inputText id="insert_email" value="#{usersController.object.email}" class="input_wa"
-                                validator="#{jsfValidatorsUser.email}"
+                                validator="#{jsfValidatorsUser.email_usersController}"
                             />
                             <br />
                             <h:message for="insert_email" id="insert_email_msg" class="jsf_error_msg" />

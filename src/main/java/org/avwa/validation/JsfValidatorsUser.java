@@ -3,6 +3,8 @@ package org.avwa.validation;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.avwa.controllers.BaseController;
+import org.avwa.controllers.UserProfileController;
 import org.avwa.controllers.UsersController;
 import org.avwa.entities.User;
 import org.avwa.enums.UserTypeEnum;
@@ -33,8 +35,18 @@ public class JsfValidatorsUser {
     @PersistenceContext
     private EntityManager em;
 
-    public void email(FacesContext facesContext,
+    public void email_usersController(FacesContext facesContext,
             UIComponent component, Object value) throws ValidatorException {
+        email(facesContext, component, value, "usersController", UsersController.class);
+    }
+
+    public void email_userProfileController(FacesContext facesContext,
+            UIComponent component, Object value) throws ValidatorException {
+        email(facesContext, component, value, "userProfileController", UserProfileController.class);
+    }
+
+    public <T> void email(FacesContext facesContext,
+            UIComponent component, Object value, String controllerName, Class<T> controllerClass) throws ValidatorException {
         String testValue = value.toString();
 
         Pattern ptr = Pattern.compile("^(.+)@(\\S+)\\.(\\S+)$");
@@ -45,9 +57,10 @@ public class JsfValidatorsUser {
             reason = "Patikrinkite el.p. adresą";
         } else {
             if (testValue.length() >= 4) {
-                UsersController usersController = facesContext.getApplication().evaluateExpressionGet(facesContext,
-                        "#{usersController}", UsersController.class);
-                if (usersController.getObject().getId() == null) { //creating new user
+                T usersController = facesContext.getApplication().evaluateExpressionGet(facesContext,
+                        "#{" + controllerName + "}", controllerClass);
+
+                if (((User)((BaseController)usersController).getObject()).getId() == null) { // creating new user
                     TypedQuery<User> query = em.createQuery(
                             "SELECT e FROM " + AnnotationsUtils.getEntityName(User.class)
                                     + " e WHERE e.email = :email AND e.type = " + UserTypeEnum.class.getCanonicalName()
@@ -57,14 +70,14 @@ public class JsfValidatorsUser {
                     if (list.size() > 0) {
                         reason = "Tokiu el.paštu vartotojas jau yra";
                     }
-                }else{ //changing existing user
+                } else { // changing existing user
                     TypedQuery<User> query = em.createQuery(
                             "SELECT e FROM " + AnnotationsUtils.getEntityName(User.class)
                                     + " e WHERE e.email = :email AND e.type = " + UserTypeEnum.class.getCanonicalName()
                                     + ".LOCAL AND e.id <> :id",
                             User.class);
                     query.setParameter("email", testValue);
-                    List<User> list = query.setParameter("id", usersController.getObject().getId()).getResultList();
+                    List<User> list = query.setParameter("id", ((User)((BaseController)usersController).getObject()).getId()).getResultList();
                     if (list.size() > 0) {
                         reason = "Tokiu el.paštu vartotojas jau yra";
                     }
