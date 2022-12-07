@@ -23,7 +23,7 @@ public class EntitiesService {
     public <T> List<T> findAll(Class<T> clazz) {
         List<T> retList = em.createQuery("select a from " + AnnotationsUtils.getEntityName(clazz) + " a")
                 .getResultList();
-        retList.stream().forEach(p -> detach(p));
+        retList = detach(retList);
         return retList;
     }
 
@@ -34,7 +34,7 @@ public class EntitiesService {
         executeUpdate(jpqlQuery, parameters);
     }
 
-    public <T> void executeUpdate(String jpqlQuery, Map<String, Object> parameters){
+    public <T> void executeUpdate(String jpqlQuery, Map<String, Object> parameters) {
         Query query = em.createQuery(jpqlQuery);
         query = setParameters(query, parameters);
         query.executeUpdate();
@@ -79,11 +79,27 @@ public class EntitiesService {
         }
     }
 
+    public <T> List<T> findList(String jpqlQuery, Map<String, Object> parameters) {
+        Query query = em.createQuery(jpqlQuery);
+        query = setParameters(query, parameters);
+        try {
+            List<T> ret = (List<T>) query.getResultList();
+            return detach(ret);
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
     public <T> T merge(T entity) {
         T ret = em.merge(entity);
         em.flush();
         detach(ret);
         return ret;
+    }
+
+    public <T> List<T> detach(List<T> list) {
+        list.stream().forEach(p -> detach(p));
+        return list;
     }
 
     public <T> T detach(T entity) {

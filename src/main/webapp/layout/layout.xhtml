@@ -35,7 +35,7 @@
                             <ul style="margin:0; list-style: none; padding:0;">
                                 <h:panelGroup rendered="#{authz.hasNoRole(['public'])}">
                                     <li>
-                                        <a href="" class="navigation_link">Profilis</a>
+                                        <a href="/userProfile" class="navigation_link">Profilis</a>
                                     </li>
                                 </h:panelGroup>
                                 <h:panelGroup rendered="#{authz.hasNoRole(['public'])}">
@@ -78,6 +78,12 @@
                                         </li>
                                         <li>
                                             <a href="#{applicationEJB.contextPath}/admin/systemProperties" class="navigation_link">Sistemos parametrai</a>
+                                        </li>
+                                        <li>
+                                            <a href="#{applicationEJB.contextPath}/admin/oauthProperties?provider=google" class="navigation_link">Google</a>
+                                        </li>
+                                        <li>
+                                            <a href="#{applicationEJB.contextPath}/admin/oauthProperties?provider=facebook" class="navigation_link">Facebook</a>
                                         </li>
                                     </ol>
                                 </div>
