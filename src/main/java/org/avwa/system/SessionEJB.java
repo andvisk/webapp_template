@@ -20,6 +20,8 @@ public class SessionEJB {
     private User user;
 
     private String oAuthState = "noState";
+    
+    private final String publicNotRegisteredUserName = "Neprisijungęs";
 
     private Map<String, String> messages = new HashMap<>();
 
@@ -30,10 +32,13 @@ public class SessionEJB {
 
     public void setPublicUser() {
         user = new User();
+        user.setName(publicNotRegisteredUserName);
         user.setRole(UserRoleEnum.PUBLIC);
     }
 
     public User getUser() {
+        if (user == null)
+            setPublicUser();
         return user;
     }
 
@@ -42,13 +47,15 @@ public class SessionEJB {
     }
 
     public String getUserName() {
-        if (user != null)
-            if (StringUtils.isNoneBlank(user.getName()))
-                return user.getName();
-            else if (StringUtils.isNoneBlank(user.getEmail())) {
-                return user.getEmail();
-            }
-        return "user_not_logged_in";
+        // ensure user != null (in case user is null -> creates public not registered
+        // user)
+        getUser();
+        if (StringUtils.isNoneBlank(user.getName()))
+            return user.getName();
+        else if (StringUtils.isNoneBlank(user.getEmail())) {
+            return user.getEmail();
+        }
+        return "Name, email - blank";
     }
 
     public String getoAuthState() {

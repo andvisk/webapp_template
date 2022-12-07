@@ -59,19 +59,24 @@ public class Authorization {
         directoriesPerm.put(dir, roles);
     }
 
-    public boolean hasRoleAdmin() {
-        return sessionEJB.getUser().getRole().equals(UserRoleEnum.ADMIN);
-    }
-
-    public boolean hasRoleRegular() {
-        return sessionEJB.getUser().getRole().equals(UserRoleEnum.REGULAR);
-    }
-
-    public boolean hasRole(List<UserRoleEnum> roles) {
-        if (sessionEJB.getUser() != null && roles.contains(sessionEJB.getUser().getRole())) {
-            return true;
+    public boolean hasRole(ArrayList<String> roleArr) {
+        for (String roleStr : roleArr) {
+            UserRoleEnum role = UserRoleEnum.valueOf(roleStr.toUpperCase());
+            if(sessionEJB.getUser().getRole().equals(role)){
+                return true;
+            }
         }
         return false;
+    }
+
+    public boolean hasNoRole(ArrayList<String> roleArr) {
+        for (String roleStr : roleArr) {
+            UserRoleEnum role = UserRoleEnum.valueOf(roleStr.toUpperCase());
+            if(sessionEJB.getUser().getRole().equals(role)){
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean hasPermissionOnDir(String dir) {

@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<html
+    xmlns:faces="jakarta.faces"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core"
+    xmlns:h="jakarta.faces.html"
+    xmlns:pt="jakarta.faces.passthrough"
+    xmlns:cc="jakarta.faces.composite"
+    xmlns:my="jakarta.faces.component"
+    xmlns:c="jakarta.tags.core"
+    xmlns:fn="jakarta.tags.functions"
+    xmlns:p="http://primefaces.org/ui"
+>
+
+    <ui:composition template="../layout/layout.xhtml">
+
+        <ui:define name="title">Sistemos parametrai</ui:define>
+
+        <ui:define name="main_content">
+            <h:form id="content_form">
+
+                <div class="form_div">
+                    <div class="div_form_grid_two_col">
+                        <h:outputLabel for="domain" class="label_wa">Domeinas</h:outputLabel>
+                        <h:inputText id="domain" value="#{systemPropertiesController.prop['DOMAIN_FULL_URL']}" class="input_wa" />
+
+                        <h:outputLabel for="email" class="label_wa">El.paštas, iš kurio siunčiami laiškai</h:outputLabel>
+                        <h:inputText id="email" value="#{systemPropertiesController.prop['SENDING_MAIL_FROM_ADDRESS']}" class="input_wa" />
+
+                        <h:outputLabel for="allowUserRegistration" class="label_wa">Leisti vartotojams registruotis</h:outputLabel>
+                        <h:selectBooleanCheckbox id="allowUserRegistration" value="#{systemPropertiesController.prop['ALLOW_REGISTERING_USERS']}" class="checkbox" />
+
+                        <h:outputLabel for="allowSocialLogins" class="label_wa">Leisti prisijungti naudojantis soc.tinklus</h:outputLabel>
+                        <h:selectBooleanCheckbox id="allowSocialLogins" value="#{systemPropertiesController.prop['ALLOW_SOCIAL_LOGINS']}" class="checkbox" />
+
+                        <h:outputLabel for="allowGoogleLogins" class="label_wa">Leisti prisijungti naudojantis Goole</h:outputLabel>
+                        <h:selectBooleanCheckbox id="allowGoogleLogins" value="#{systemPropertiesController.prop['ALLOW_SOCIAL_LOGIN___GOOGLE']}" class="checkbox" />
+
+                        <h:outputLabel for="allowFacebookLogins" class="label_wa">Leisti prisijungti naudojantis Facebook</h:outputLabel>
+                        <h:selectBooleanCheckbox id="allowFacebookLogins" value="#{systemPropertiesController.prop['ALLOW_SOCIAL_LOGIN___FACEBOOK']}" class="checkbox" />
+
+                        <script type="text/javascript">
+
+                            window.attachEvent('load', initCheckBoxes);
+
+                            function initCheckBoxes () {
+                                var socialCommon = document.getElementById('allowSocialLogins');
+                                console.log(socialCommon.checked);
+                                enableDisableSocial(socialCommon.checked);
+                            }
+
+                            function enableDisableSocial(bool){
+                                const checkBoxes = ['allowGoogleLogins', 'allowFacebookLogins'];
+
+                                checkBoxes.forEach((value, index, array)=>{
+                                    var socialX = document.getElementById(value);
+                                    socialX.setAttribute('disabled', bool); 
+                                });
+                            }
+
+                        </script>
+
+                    </div>
+                </div>
+
+                <h:commandButton id="save-button" value="Išsaugoti" action="#{systemPropertiesController.saveProperties}" class="button_wa" />
+
+            </h:form>
+
+        </ui:define>
+
+    </ui:composition>
+
+</html>

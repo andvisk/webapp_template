@@ -3,11 +3,16 @@ package org.avwa.system;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Set;
 
+import org.avwa.entities.User;
+import org.avwa.enums.UserRoleEnum;
+import org.avwa.enums.UserTypeEnum;
 import org.avwa.system.authentication.oAuth.OAuth;
 import org.avwa.system.authentication.oAuth.OAuthProviderType;
 import org.avwa.system.authorization.Authorization;
+import org.avwa.utils.AnnotationsUtils;
 import org.avwa.utils.PathUtils;
 import org.slf4j.Logger;
 
@@ -16,6 +21,7 @@ import jakarta.faces.application.ResourceHandler;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -49,6 +55,9 @@ public class ServletFilter implements Filter {
 
     @Inject
     ApplicationEJB applicationEJB;
+
+    @Inject
+    SessionEJB sessionEJB;
 
     FilterConfig filterConfig;
 
@@ -84,6 +93,8 @@ public class ServletFilter implements Filter {
         String requestedDirectoryWithoutRoot = "";
 
         boolean requestedResource = false;
+
+        forDevelopementEnvAutoLogin(httpRequest);
 
         if (!PathUtils.accessingOneOfThePaths(uri, authorization.getRestfulEndPooints())) {// skip restful requests
 
@@ -197,6 +208,23 @@ public class ServletFilter implements Filter {
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
         response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
         response.setDateHeader("Expires", 0); // Proxies.
+    }
+
+    @Deprecated
+    public void forDevelopementEnvAutoLogin(HttpServletRequest request) {
+        String ipAddress = request.getRemoteAddr();
+        log.debug("remote ip address:" + ipAddress);
+        if (sessionEJB.getUser().getRole().equals(UserRoleEnum.PUBLIC) && "127.0.0.1".equals(ipAddress)) {
+            TypedQuery<User> query = em.createQuery(
+                    "SELECT e FROM " + AnnotationsUtils.getEntityName(User.class)
+                            + " e WHERE e.email = :email",
+                    User.class);
+            List<User> list = query.setParameter("email", "neratokio@sages.lt").getResultList();
+            if (list.size() > 0) {
+                sessionEJB.setUser(list.get(0));
+            }
+
+        }
     }
 
     public void destroy() {

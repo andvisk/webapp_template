@@ -93,4 +93,8 @@ public class ApplicationEJB {
                 .findAny().orElse(null);
         return prop.getValue();
     }
+
+    public List<ApplicationProperties> getProperties(){
+        return properties;
+    }
 }

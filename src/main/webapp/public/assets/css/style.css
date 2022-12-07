@@ -235,3 +235,8 @@
     #popupDivContent{
       padding: 0.5em 1em;
     }
+
+    .checkbox{
+      width: 20px;
+      height: 20px;
+    }
