@@ -99,8 +99,6 @@ public class ServletFilter implements Filter {
 
         forDevelopementEnvAutoLogin(httpRequest);
 
-        setHttpSessionInfoValues(httpRequest);
-
         HttpSession session = httpRequest.getSession(false);
 
         todoJobManager.doJobsForSession(session.getId());
@@ -164,6 +162,7 @@ public class ServletFilter implements Filter {
 
         // check authorization for directory
         if (!requestedResource) {
+            setHttpSessionInfoValues(httpRequest);
             if (!authorization.hasPermissionOnDir(requestedDirectoryWithoutRoot)) {
                 log.debug("unauthorized directory:" + requestedDirectoryWithoutRoot);
                 jsfUtilsEJB.forwardWithDispatcher(httpRequest, httpResponse, "/" + unauthorizedPage);
@@ -199,11 +198,16 @@ public class ServletFilter implements Filter {
     }
 
     private void setHttpSessionInfoValues(HttpServletRequest request) {
+        long start = System.currentTimeMillis();
         String ipAddress = request.getRemoteAddr();
         HttpSession httpSession = request.getSession(false);
         HttpSessionInfo info = applicationEJB.getHttpsessions().get(httpSession.getId());
         info.setIp(ipAddress);
         info.setUser(sessionEJB.getUser());
+        long stop = System.currentTimeMillis();
+
+        log.debug("timing: " + (stop-start));
+
     }
 
     private boolean isResourceReq(String uri) {
