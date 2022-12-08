@@ -6,6 +6,7 @@ import org.avwa.entities.User;
 import org.avwa.enums.UserRoleEnum;
 import org.avwa.enums.UserTypeEnum;
 import org.avwa.pfUtils.LazyDataModelExt;
+import org.avwa.system.ApplicationEJB;
 import org.avwa.system.JsfUtilsEJB;
 import org.avwa.system.SessionEJB;
 import org.avwa.system.authentication.oAuth.OAuthProviderType;
@@ -26,6 +27,9 @@ public class UsersController extends BaseController<User> {
 
     @Inject
     Logger log;
+    
+    @Inject
+    ApplicationEJB applicationEJB;
 
     @Inject
     SessionEJB sessionEJB;
@@ -114,6 +118,8 @@ public class UsersController extends BaseController<User> {
         entService.merge(object);
         object = createNewObject(clazz);
         passwordString = "";
+
+        applicationEJB.refreshUsersInAllSessions();
     }
 
     public void userRegistration() {

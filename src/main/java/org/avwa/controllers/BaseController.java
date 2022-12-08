@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 
 import jakarta.inject.Inject;
 
-public abstract class BaseController<T> implements Serializable {
+public class BaseController<T> implements Serializable {
 
     @Inject
     EntitiesService entService;
@@ -37,6 +37,4 @@ public abstract class BaseController<T> implements Serializable {
     public LazyDataModel<T> getModel() {
         return model;
     }
-
-    public abstract T getObject();
 }

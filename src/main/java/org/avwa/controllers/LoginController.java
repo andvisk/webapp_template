@@ -201,8 +201,4 @@ public class LoginController extends BaseController<User> {
         this.passwordString = passwordString;
     }
 
-    public User getObject() {
-        return null;
-    }
-
 }

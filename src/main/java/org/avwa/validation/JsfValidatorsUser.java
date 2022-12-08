@@ -3,7 +3,6 @@ package org.avwa.validation;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.avwa.controllers.BaseController;
 import org.avwa.controllers.UserProfileController;
 import org.avwa.controllers.UsersController;
 import org.avwa.entities.User;
@@ -37,19 +36,31 @@ public class JsfValidatorsUser {
 
     public void email_usersController(FacesContext facesContext,
             UIComponent component, Object value) throws ValidatorException {
-        email(facesContext, component, value, "usersController", UsersController.class);
+
+        UsersController usersController = facesContext.getApplication().evaluateExpressionGet(facesContext,
+                "#{usersController}", UsersController.class);
+        User user = usersController.getObject();
+
+        email(facesContext, component, value, user);
+
     }
 
     public void email_userProfileController(FacesContext facesContext,
             UIComponent component, Object value) throws ValidatorException {
-        email(facesContext, component, value, "userProfileController", UserProfileController.class);
+
+        UserProfileController userProfileController = facesContext.getApplication().evaluateExpressionGet(facesContext,
+                "#{userProfileController}", UserProfileController.class);
+        User user = userProfileController.getObject();
+
+        email(facesContext, component, value, user);
     }
 
     public <T> void email(FacesContext facesContext,
-            UIComponent component, Object value, String controllerName, Class<T> controllerClass) throws ValidatorException {
+            UIComponent component, Object value, User user)
+            throws ValidatorException {
         String testValue = value.toString();
 
-        Pattern ptr = Pattern.compile("^(.+)@(\\S+)\\.(\\S+)$");
+        Pattern ptr = Pattern.compile(JsfValidators.emailRegexPattern);
 
         String reason = "";
 
@@ -57,10 +68,8 @@ public class JsfValidatorsUser {
             reason = "Patikrinkite el.p. adresą";
         } else {
             if (testValue.length() >= 4) {
-                T usersController = facesContext.getApplication().evaluateExpressionGet(facesContext,
-                        "#{" + controllerName + "}", controllerClass);
 
-                if (((User)((BaseController)usersController).getObject()).getId() == null) { // creating new user
+                if (user.getId() == null) { // creating new user
                     TypedQuery<User> query = em.createQuery(
                             "SELECT e FROM " + AnnotationsUtils.getEntityName(User.class)
                                     + " e WHERE e.email = :email AND e.type = " + UserTypeEnum.class.getCanonicalName()
@@ -77,7 +86,9 @@ public class JsfValidatorsUser {
                                     + ".LOCAL AND e.id <> :id",
                             User.class);
                     query.setParameter("email", testValue);
-                    List<User> list = query.setParameter("id", ((User)((BaseController)usersController).getObject()).getId()).getResultList();
+                    List<User> list = query
+                            .setParameter("id", user.getId())
+                            .getResultList();
                     if (list.size() > 0) {
                         reason = "Tokiu el.paštu vartotojas jau yra";
                     }
@@ -97,7 +108,7 @@ public class JsfValidatorsUser {
             UIComponent component, Object value) throws ValidatorException {
         String testValue = value.toString();
 
-        Pattern ptr = Pattern.compile("^(.+)@(\\S+)\\.(\\S+)$");
+        Pattern ptr = Pattern.compile(JsfValidators.emailRegexPattern);
 
         String reason = "Patikrinkite el.p. adresą";
 

@@ -6,10 +6,12 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.avwa.entities.User;
 import org.avwa.enums.UserRoleEnum;
+import org.avwa.jpaUtils.EntitiesService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateful;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 @Named("sessionEJB")
@@ -17,10 +19,15 @@ import jakarta.inject.Named;
 @Stateful
 public class SessionEJB {
 
+    
+
+    @Inject
+    EntitiesService entService;
+
     private User user;
 
     private String oAuthState = "noState";
-    
+
     private final String publicNotRegisteredUserName = "Neprisijungęs";
 
     private Map<String, String> messages = new HashMap<>();
@@ -44,6 +51,11 @@ public class SessionEJB {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public void refreshUserFromDB() {
+        if (user.getId() != null)
+            user = entService.find(User.class, user.getId());
     }
 
     public String getUserName() {

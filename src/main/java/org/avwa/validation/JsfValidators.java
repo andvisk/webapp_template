@@ -24,6 +24,8 @@ public class JsfValidators {
     @PersistenceContext
     private EntityManager em;
 
+    public static final String emailRegexPattern = "^(.+)@(\\S+)\\.(\\S+)$";
+
     public void notNull(FacesContext facesContext,
             UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
@@ -37,7 +39,7 @@ public class JsfValidators {
             UIComponent component, Object value) throws ValidatorException {
         String testValue = value.toString();
 
-        Pattern ptr = Pattern.compile("^(.+)@(\\S+)\\.(\\S+)$");
+        Pattern ptr = Pattern.compile(emailRegexPattern);
 
         if (!ptr.matcher(testValue).matches()) {
             FacesMessage msg = new FacesMessage("", "Patikrinkite el.p. adresą");

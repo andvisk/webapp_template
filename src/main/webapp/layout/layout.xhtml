@@ -10,6 +10,7 @@
     xmlns:c="jakarta.tags.core"
     xmlns:fn="jakarta.tags.functions"
     xmlns:p="http://primefaces.org/ui"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
 >
     <h:head>
         <meta charset="UTF-8" />
@@ -59,7 +60,7 @@
         <div id="div_root">
             <div id="div_page_header">
                 <div id="div_login_name">
-                    <p id="p_header_login_name">#{sessionEJB.getUserName()}</p>
+                    <p jsf:id="p_header_login_name" id="p_header_login_name">#{sessionEJB.getUserName()}</p>
                 </div>
             </div>
             <div id="div_page_wrapper">
@@ -84,6 +85,9 @@
                                         </li>
                                         <li>
                                             <a href="#{applicationEJB.contextPath}/admin/oauthProperties?provider=facebook" class="navigation_link">Facebook</a>
+                                        </li>
+                                        <li>
+                                            <a href="#{applicationEJB.contextPath}/admin/sessions" class="navigation_link">Sesijos</a>
                                         </li>
                                     </ol>
                                 </div>

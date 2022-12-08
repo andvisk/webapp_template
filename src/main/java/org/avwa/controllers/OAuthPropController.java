@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.avwa.entities.OAuthProperties;
-import org.avwa.entities.User;
 import org.avwa.enums.OAuthPropertiesNamesEnum;
 import org.avwa.system.ApplicationEJB;
 import org.avwa.system.authentication.oAuth.OAuthProviderType;
@@ -113,7 +112,4 @@ public class OAuthPropController extends BaseController<OAuthProperties> {
         this.prop = prop;
     }
 
-    public OAuthProperties getObject(){
-        return null;
-    }
 }

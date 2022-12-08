@@ -3,6 +3,8 @@ package org.avwa.system;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.avwa.entities.ApplicationProperties;
@@ -20,6 +22,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpSession;
 
 @Named
 @ApplicationScoped
@@ -36,6 +39,9 @@ public class ApplicationEJB {
 
     private List<ApplicationProperties> properties = new ArrayList<>();
 
+    private static final Map<String, HttpSession> httpSessions = new ConcurrentHashMap<>();
+
+
     private Configuration cfgFreeMarker;
 
     @PostConstruct
@@ -50,6 +56,15 @@ public class ApplicationEJB {
         cfgFreeMarker.setDefaultEncoding("UTF-8");
         cfgFreeMarker.setLocale(Locale.US);
         cfgFreeMarker.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+    }
+
+    public void refreshUsersInAllSessions(){
+
+//        sessionEJB.refreshUserFromDB();
+    }
+
+    public static Map<String, HttpSession> getHttpsessions() {
+        return httpSessions;
     }
 
     public Configuration getCfgFreeMarker() {

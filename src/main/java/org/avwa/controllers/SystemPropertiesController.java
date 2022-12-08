@@ -94,8 +94,4 @@ public class SystemPropertiesController extends BaseController<ApplicationProper
         return org.avwa.utils.StringUtils.getAsBoolean(value);
     }
 
-    public ApplicationProperties getObject(){
-        return null;
-    }
-
 }
