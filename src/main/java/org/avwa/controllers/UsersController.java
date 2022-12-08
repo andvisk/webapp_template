@@ -1,6 +1,7 @@
 package org.avwa.controllers;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.avwa.entities.User;
 import org.avwa.enums.UserRoleEnum;
@@ -9,6 +10,7 @@ import org.avwa.pfUtils.LazyDataModelExt;
 import org.avwa.system.ApplicationEJB;
 import org.avwa.system.JsfUtilsEJB;
 import org.avwa.system.SessionEJB;
+import org.avwa.system.TodoJobManager;
 import org.avwa.system.authentication.oAuth.OAuthProviderType;
 import org.avwa.utils.AnnotationsUtils;
 import org.avwa.utils.Pbkdf2;
@@ -33,6 +35,9 @@ public class UsersController extends BaseController<User> {
 
     @Inject
     SessionEJB sessionEJB;
+
+    @Inject
+    TodoJobManager todoJobManager;
 
     @Inject
     JsfUtilsEJB jsfUtilsEJB;
@@ -119,7 +124,8 @@ public class UsersController extends BaseController<User> {
         object = createNewObject(clazz);
         passwordString = "";
 
-        applicationEJB.refreshUsersInAllSessions();
+        Consumer<SessionEJB> consumer = p -> p.refreshUserFromDB();
+        todoJobManager.addTodoForAllSessions(consumer, SessionEJB.class, "refresh user object from DB");
     }
 
     public void userRegistration() {

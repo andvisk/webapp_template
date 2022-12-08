@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.avwa.entities.User;
 import org.avwa.enums.UserRoleEnum;
-import org.avwa.enums.UserTypeEnum;
 import org.avwa.system.authentication.oAuth.OAuth;
 import org.avwa.system.authentication.oAuth.OAuthProviderType;
 import org.avwa.system.authorization.Authorization;
@@ -33,6 +32,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @ApplicationScoped
 @WebFilter(urlPatterns = "/*")
@@ -58,6 +58,9 @@ public class ServletFilter implements Filter {
 
     @Inject
     SessionEJB sessionEJB;
+
+    @Inject
+    TodoJobManager todoJobManager;
 
     FilterConfig filterConfig;
 
@@ -95,6 +98,12 @@ public class ServletFilter implements Filter {
         boolean requestedResource = false;
 
         forDevelopementEnvAutoLogin(httpRequest);
+
+        setHttpSessionInfoValues(httpRequest);
+
+        HttpSession session = httpRequest.getSession(false);
+
+        todoJobManager.doJobsForSession(session.getId());
 
         if (!PathUtils.accessingOneOfThePaths(uri, authorization.getRestfulEndPooints())) {// skip restful requests
 
@@ -187,6 +196,14 @@ public class ServletFilter implements Filter {
             setHeadersForNotCaching(resp);
         }
         chain.doFilter(req, resp);// sends request to next resource
+    }
+
+    private void setHttpSessionInfoValues(HttpServletRequest request) {
+        String ipAddress = request.getRemoteAddr();
+        HttpSession httpSession = request.getSession(false);
+        HttpSessionInfo info = applicationEJB.getHttpsessions().get(httpSession.getId());
+        info.setIp(ipAddress);
+        info.setUser(sessionEJB.getUser());
     }
 
     private boolean isResourceReq(String uri) {

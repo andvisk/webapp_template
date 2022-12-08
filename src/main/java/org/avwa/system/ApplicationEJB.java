@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +23,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpSession;
 
 @Named
 @ApplicationScoped
@@ -39,8 +39,8 @@ public class ApplicationEJB {
 
     private List<ApplicationProperties> properties = new ArrayList<>();
 
-    private static final Map<String, HttpSession> httpSessions = new ConcurrentHashMap<>();
-
+    private Map<String, HttpSessionInfo> httpSessions = new ConcurrentHashMap<>();
+    private Map<String, Queue<TodoJob>> todoForSessions = new ConcurrentHashMap<>();
 
     private Configuration cfgFreeMarker;
 
@@ -58,12 +58,11 @@ public class ApplicationEJB {
         cfgFreeMarker.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
     }
 
-    public void refreshUsersInAllSessions(){
-
-//        sessionEJB.refreshUserFromDB();
+    public Map<String, Queue<TodoJob>> getTodoforsessions() {
+        return todoForSessions;
     }
 
-    public static Map<String, HttpSession> getHttpsessions() {
+    public Map<String, HttpSessionInfo> getHttpsessions() {
         return httpSessions;
     }
 
@@ -109,7 +108,7 @@ public class ApplicationEJB {
         return prop.getValue();
     }
 
-    public List<ApplicationProperties> getProperties(){
+    public List<ApplicationProperties> getProperties() {
         return properties;
     }
 }

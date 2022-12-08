@@ -12,10 +12,15 @@ public class HttpSessionCollector implements HttpSessionListener {
     @Inject
     ApplicationEJB applicationEJB;
 
+    @Inject
+    TodoJobManager todoJobManager;
+
     @Override
     public void sessionCreated(HttpSessionEvent event) {
         HttpSession session = event.getSession();
-        applicationEJB.getHttpsessions().put(session.getId(), session);
+
+        HttpSessionInfo info = new HttpSessionInfo(session.getId(), "", session.getCreationTime());
+        applicationEJB.getHttpsessions().put(session.getId(), info);
     }
 
     @Override

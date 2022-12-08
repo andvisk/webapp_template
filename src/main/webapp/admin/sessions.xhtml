@@ -24,21 +24,25 @@
                         id="sessionTable"
                         emptyMessage="Įrašų nerasta"
                         widgetVar="sessionTable"
-                        var="sessionMapEntry"
+                        var="sessionInfo"
                         value="#{sessionsController.getSessionData()}"
                         size="small"
                         stripedRows="true">
 
                         <p:column headerText="ID">
-                            <h:outputText value="#{sessionMapEntry.get('id')}" />
+                            <h:outputText value="#{sessionInfo.id}" />
+                        </p:column>
+
+                        <p:column headerText="IP">
+                            <h:outputText value="#{sessionInfo.ip}" />
                         </p:column>
 
                         <p:column headerText="Sukurta">
-                            <h:outputText value="#{sessionMapEntry.get('created')}" />
+                            <h:outputText value="#{sessionInfo.createdHRF}" />
                         </p:column>
 
                         <p:column headerText="Vartotojas">
-                            <h:outputText value="#{sessionMapEntry.get('user')}" />
+                        <h:outputText value="#{sessionInfo.userName}" />
                         </p:column>
 
                     </p:dataTable>

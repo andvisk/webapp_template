@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.avwa.entities.User;
 import org.avwa.enums.UserRoleEnum;
 import org.avwa.jpaUtils.EntitiesService;
+import org.slf4j.Logger;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateful;
@@ -19,7 +20,8 @@ import jakarta.inject.Named;
 @Stateful
 public class SessionEJB {
 
-    
+    @Inject
+    Logger log;
 
     @Inject
     EntitiesService entService;
