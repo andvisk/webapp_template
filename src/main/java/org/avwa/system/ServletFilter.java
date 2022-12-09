@@ -69,6 +69,7 @@ public class ServletFilter implements Filter {
     private final String pageNotFoundUri = "pageNotFound.xhtml";
     private final String unauthorizedPage = "unauthorized.xhtml";
     private final String resourcePath = "/public/assets";
+    private final String oAuthDir = "/socialauth";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -103,7 +104,7 @@ public class ServletFilter implements Filter {
 
         todoJobManager.doJobsForSession(session.getId());
 
-        if (!PathUtils.accessingOneOfThePaths(uri, authorization.getRestfulEndPooints())) {// skip restful requests
+        if (!requestPath.startsWith(applicationEJB.getContextPath() + oAuthDir)) {// skip oauth return servlet requests
 
             if (requestPath.endsWith("/")) {
 
@@ -157,7 +158,7 @@ public class ServletFilter implements Filter {
                 }
             }
         } else {
-            log.debug("servlet filter skipped restful end point:" + requestPath);
+            log.debug("servlet filter skipped oauth end point:" + requestPath);
         }
 
         // check authorization for directory
@@ -206,7 +207,7 @@ public class ServletFilter implements Filter {
         info.setUser(sessionEJB.getUser());
         long stop = System.currentTimeMillis();
 
-        log.debug("timing: " + (stop-start));
+        log.debug("timing: " + (stop - start));
 
     }
 

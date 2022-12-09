@@ -22,23 +22,17 @@ public class Authorization {
     @Inject
     SessionEJB sessionEJB;
 
-    private List<String> restfulEndPooints;
-
     private Map<String, List<UserRoleEnum>> directoriesPerm;
 
     @PostConstruct
     public void init() {
-        restfulEndPooints = Arrays.asList("socialauth");
 
         directoriesPerm = new HashMap<>(10);
 
         addDirPermission("admin", UserRoleEnum.ADMIN);
         addDirPermission("", Arrays.asList(UserRoleEnum.values()));
         addDirPermission("public", Arrays.asList(UserRoleEnum.values()));
-    }
-
-    public List<String> getRestfulEndPooints() {
-        return restfulEndPooints;
+        addDirPermission("socialauth", Arrays.asList(UserRoleEnum.values()));
     }
 
     private void addDirPermission(String dir, List<UserRoleEnum> roles) {

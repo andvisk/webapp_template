@@ -4,9 +4,6 @@ package org.avwa.entities;
 import java.io.Serializable;
 import java.util.UUID;
 
-import org.hibernate.annotations.DynamicUpdate;
-
-import jakarta.persistence.Cacheable;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
@@ -14,8 +11,6 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.SequenceGenerator;
 
 @MappedSuperclass
-@Cacheable(false)
-@DynamicUpdate(value = true)
 public abstract class EntityBase implements Serializable {
 
     private static final long serialVersionUID = 1L;

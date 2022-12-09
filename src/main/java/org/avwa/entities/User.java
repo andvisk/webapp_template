@@ -3,13 +3,17 @@ package org.avwa.entities;
 import org.avwa.enums.UserRoleEnum;
 import org.avwa.enums.UserTypeEnum;
 import org.avwa.system.authentication.oAuth.OAuthProviderType;
+import org.hibernate.annotations.DynamicUpdate;
 
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
 @Entity
+@Cacheable(false)
+@DynamicUpdate(value = true)
 @Table(name = "users")
 public class User extends EntityBase {
 

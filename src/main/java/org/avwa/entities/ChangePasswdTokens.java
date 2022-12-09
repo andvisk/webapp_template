@@ -2,11 +2,16 @@ package org.avwa.entities;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.DynamicUpdate;
+
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
+@Cacheable(false)
+@DynamicUpdate(value = true)
 @Table(name = "change_pswd_tokens")
 public class ChangePasswdTokens extends EntityBase {
 
